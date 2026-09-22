@@ -126,6 +126,14 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
   border-top:3px solid rgba(255,255,255,.9);border-bottom:3px solid var(--line)}
 .mb .bev::before{content:"";position:absolute;left:34%;top:8%;bottom:8%;width:0;border-left:2px dotted rgba(255,255,255,.75);transform:skewX(-32deg)}
 .mb .bev::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.06) 32%,rgba(0,0,0,.20) 60%,rgba(0,0,0,.04) 100%)}
+#menu .mb .bev{width:100%;clip-path:polygon(0 0,100% 0,100% 58%,0 100%);
+  background:linear-gradient(90deg,var(--bevel1) 0%,var(--bevel1) 52%,var(--bevel2) 74%,rgba(0,0,0,.28) 90%,transparent 100%);
+  box-shadow:inset 0 3px 0 rgba(255,255,255,.9);border:0}
+#menu .mb .bev::after{content:"";position:absolute;top:0;left:-22%;width:18%;height:100%;inset:auto;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
+  mix-blend-mode:color-dodge;animation:bevSheen 4.5s linear infinite}
+#menu .mb:hover .bev,#menu .mb.f .bev{background:linear-gradient(90deg,#ffc27a 0%,#ffc27a 52%,#c26a1a 74%,rgba(0,0,0,.28) 90%,transparent 100%);box-shadow:inset 0 3px 0 #fff}
+@keyframes bevSheen{0%{left:-22%}55%{left:104%}100%{left:104%}}
 .mb .acc{position:absolute;left:-24px;top:0;width:22px;height:100%;pointer-events:none}
 .mb .acc::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:10px;border:2px solid var(--line);border-right:0}
 .mb .acc::after{content:"";position:absolute;left:13px;top:20%;bottom:20%;width:2px;background:var(--line);box-shadow:5px 0 0 rgba(255,255,255,.85)}
