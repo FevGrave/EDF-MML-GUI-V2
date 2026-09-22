@@ -10,18 +10,18 @@ const API = () =>
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
 
-let MODS = [
-  { id: "m1", name: "EDF5 Weapon Pack", category: "Weapons", enabled: true, order: 0, conflicts: [] },
-  { id: "m2", name: "Lost Mission Pack", category: "Missions", enabled: true, order: 1, conflicts: ["Mission table overlap with Redux Overhaul"] },
-  { id: "m3", name: "Redux Overhaul", category: "Core", enabled: true, order: 2, conflicts: ["Mission table overlap with Lost Mission Pack"] },
-  { id: "m4", name: "Custom Text Edits", category: "Text", enabled: false, order: 3, conflicts: [] },
-  { id: "m5", name: "Armor Skins", category: "Visual", enabled: true, order: 4, conflicts: [] },
-  { id: "m6", name: "Balance Tweaks", category: "Core", enabled: false, order: 5, conflicts: [] },
+let PLUGINS = [
+  { id: "p1", name: "edf5_native_fix.dll", type: "dll", folder: "native", category: "Native", enabled: true, order: 0, conflicts: [] },
+  { id: "p2", name: "modern_camera.dll", type: "dll", folder: "camera", category: "Camera", enabled: true, order: 1, conflicts: [] },
+  { id: "p3", name: "input_remap.txt", type: "txt", folder: "PatchKeys", category: "Input", enabled: true, order: 2, conflicts: [] },
+  { id: "p4", name: "alpha_balance.txt", type: "txt", folder: "PatchTables", category: "Balance", enabled: false, order: 3, conflicts: ["Overwrites weapon table rows also patched by redux_overhaul"] },
+  { id: "p5", name: "redux_overhaul.txt", type: "txt", folder: "PatchTables", category: "Core", enabled: true, order: 4, conflicts: ["Overwrites weapon table rows also patched by alpha_balance"] },
+  { id: "p6", name: "armor_skins.txt", type: "txt", folder: "Visual", category: "Visual", enabled: true, order: 5, conflicts: [] },
 ];
 
 let PROFILES = [
-  { id: "p1", name: "core+lostmp", timestamp: Date.now() - 86400000, mods: MODS.filter((m) => m.enabled).map((m) => ({ ...m })) },
-  { id: "p2", name: "vanilla+skins", timestamp: Date.now() - 2 * 86400000, mods: [{ ...MODS[0], enabled: true }, { ...MODS[4], enabled: true }] },
+  { id: "p1", name: "core+lostmp", timestamp: Date.now() - 86400000, mods: PLUGINS.filter((m) => m.enabled).map((m) => ({ ...m })) },
+  { id: "p2", name: "vanilla+skins", timestamp: Date.now() - 2 * 86400000, mods: [{ ...PLUGINS[0], enabled: true }, { ...PLUGINS[5], enabled: true }] },
 ];
 
 export const bridge = {
@@ -38,24 +38,24 @@ export const bridge = {
       ],
       counts: {
         weapons: { data: { used: 1565, capacity: 8192 } },
-        mods: { data: { on: MODS.filter((m) => m.enabled).length, total: MODS.length } },
+        mods: { data: { on: PLUGINS.filter((m) => m.enabled).length, total: PLUGINS.length } },
         packs: { data: { total: 4 } },
         mode: { data: { ni_mode: "NI test, order by MOD NAME" } },
       },
     };
   },
-  async getMods() {
-    if (API()?.get_mods) return API().get_mods();
-    return clone(MODS).sort((a, b) => a.order - b.order);
+  async getPlugins() {
+    if (API()?.get_plugins) return API().get_plugins();
+    return clone(PLUGINS).sort((a, b) => a.order - b.order);
   },
-  async toggleMod(id, enabled) {
-    if (API()?.toggle_mod) return API().toggle_mod(id, enabled);
-    const m = MODS.find((x) => x.id === id);
+  async togglePlugin(id, enabled) {
+    if (API()?.toggle_plugin) return API().toggle_plugin(id, enabled);
+    const m = PLUGINS.find((x) => x.id === id);
     if (m) m.enabled = enabled;
   },
-  async setLoadOrder(ids) {
-    if (API()?.set_load_order) return API().set_load_order(ids);
-    ids.forEach((id, i) => { const m = MODS.find((x) => x.id === id); if (m) m.order = i; });
+  async uninstallPlugin(id) {
+    if (API()?.uninstall_plugin) return API().uninstall_plugin(id);
+    PLUGINS = PLUGINS.filter((x) => x.id !== id);
   },
   async getProfiles() {
     if (API()?.get_profiles) return API().get_profiles();
@@ -63,14 +63,14 @@ export const bridge = {
   },
   async saveProfile(name) {
     if (API()?.save_profile) return API().save_profile(name);
-    const p = { id: "p" + Date.now(), name, timestamp: Date.now(), mods: MODS.map((m) => ({ ...m })) };
+    const p = { id: "p" + Date.now(), name, timestamp: Date.now(), mods: PLUGINS.map((m) => ({ ...m })) };
     PROFILES.unshift(p);
     return clone(p);
   },
   async loadProfile(id) {
     if (API()?.load_profile) return API().load_profile(id);
     const p = PROFILES.find((x) => x.id === id);
-    if (p) p.mods.forEach((pm) => { const m = MODS.find((x) => x.name === pm.name); if (m) { m.enabled = pm.enabled; m.order = pm.order; } });
+    if (p) p.mods.forEach((pm) => { const m = PLUGINS.find((x) => x.name === pm.name); if (m) { m.enabled = pm.enabled; m.order = pm.order; } });
   },
   async exportProfile(id) {
     if (API()?.export_profile) return API().export_profile(id);
@@ -91,12 +91,12 @@ export const bridge = {
     if (API()?.run_command) return API().run_command(raw);
     const c = raw.toLowerCase().trim();
     if (!c) return { text: "", cls: "d" };
-    if (c === "help" || c === "h") return { text: "Commands: help | bg random | bg list | ni | mods | build | fetch <code>", cls: "ok" };
+    if (c === "help" || c === "h") return { text: "Commands: help | bg random | bg list | ni | plugins | build | fetch <code>", cls: "ok" };
     if (c === "bg random" || c === "bg r") return { text: "Random background set (demo).", cls: "ok" };
     if (c === "bg list") return { text: "Pool: 28 images (1 custom)", cls: "ok" };
     if (c.indexOf("bg ") === 0) return { text: "Background set: " + c.slice(3), cls: "ok" };
     if (c === "ni" || c === "no install") return { text: "NI request queued — open the Build menu.", cls: "ok" };
-    if (c === "mods") { const on = MODS.filter((m) => m.enabled).length; return { text: `${on} of ${MODS.length} mods enabled.`, cls: "ok" }; }
+    if (c === "plugins") { const on = PLUGINS.filter((m) => m.enabled).length; return { text: `${on} of ${PLUGINS.length} plugins enabled.`, cls: "ok" }; }
     if (c === "build") return { text: "Use the Build menu for builds.", cls: "ok" };
     if (c === "debug_cmd") return { text: "demo: nothing to report", cls: "d" };
     if (/^[0-9a-f-]{36}$/.test(c)) return { text: "Request code accepted, fetching mod... (demo)", cls: "ok" };

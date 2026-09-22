@@ -9,7 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { MmlPaletteProvider } from '@/lib/mmlPalette';
 import MmlLayout from '@/components/mml/MmlLayout';
 import Home from '@/pages/Home';
-import Mods from '@/pages/Mods';
+import Plugins from '@/pages/Plugins';
 import Build from '@/pages/Build';
 import Profiles from '@/pages/Profiles';
 import Settings from '@/pages/Settings';
@@ -39,7 +39,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route element={<MmlLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/mods" element={<Mods />} />
+        <Route path="/plugins" element={<Plugins />} />
         <Route path="/build" element={<Build />} />
         <Route path="/profiles" element={<Profiles />} />
         <Route path="/settings" element={<Settings />} />
