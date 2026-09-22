@@ -22,7 +22,7 @@ export default function CommandLine() {
   };
 
   return (
-    <div className="win conwin" style={{ left: 700, top: 756, width: 800, height: 190 }}>
+    <div className="win conwin" style={{ left: 630, top: 756, width: 800, height: 190 }}>
       <div id="log">
         {log.map((l, i) => (
           <div key={i} className={l.c}>{l.t}</div>

@@ -26,7 +26,7 @@ export default function Mods() {
 
   return (
     <>
-      <Panel style={{ left: 690, top: 130, width: 760, height: 830, padding: "10px 20px" }} title="Mods" right={<Pill className="w">{mods.filter((m) => m.enabled).length} of {mods.length} on</Pill>}>
+      <Panel style={{ left: 620, top: 130, width: 760, height: 830, padding: "10px 20px" }} title="Mods" right={<Pill className="w">{mods.filter((m) => m.enabled).length} of {mods.length} on</Pill>}>
         <div className="scroller" style={{ height: 720, marginTop: 8 }}>
           {sorted.map((m, i) => (
             <div key={m.id} className={`modrow ${sel === m.id ? "sel" : ""}`} onClick={() => setSel(m.id)}>
@@ -42,7 +42,7 @@ export default function Mods() {
           ))}
         </div>
       </Panel>
-      <Panel style={{ left: 1470, top: 130, width: 390, height: 830, padding: "10px 18px" }} title="Conflicts">
+      <Panel style={{ left: 1400, top: 130, width: 390, height: 830, padding: "10px 18px" }} title="Conflicts">
         {selMod ? (
           <div style={{ marginTop: 8 }}>
             <p className="cfn">{selMod.name}</p>

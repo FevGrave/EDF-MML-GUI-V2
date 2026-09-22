@@ -11,7 +11,7 @@ export default function Settings() {
   const [art, setArt] = useState(false);
 
   return (
-    <Panel style={{ left: 690, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Settings">
+    <Panel style={{ left: 620, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Settings">
       <div className="optrow" style={{ marginTop: 12 }}><span>Palette</span>
         <div className="seg">
           {PALETTES.map(([k, c]) => (

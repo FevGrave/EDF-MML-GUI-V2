@@ -20,7 +20,7 @@ export default function Profiles() {
 
   return (
     <>
-      <Panel style={{ left: 690, top: 130, width: 560, height: 830, padding: "10px 20px" }} title="Profiles" right={<Pill className="w">{profiles.length} saved</Pill>}>
+      <Panel style={{ left: 620, top: 130, width: 560, height: 830, padding: "10px 20px" }} title="Profiles" right={<Pill className="w">{profiles.length} saved</Pill>}>
         <div className="scroller" style={{ height: 560, marginTop: 8 }}>
           {profiles.map((p) => (
             <div key={p.id} className={`modrow ${sel === p.id ? "sel" : ""}`} onClick={() => setSel(p.id)}>
@@ -37,7 +37,7 @@ export default function Profiles() {
           <div className="mb big action" style={{ width: 140 }} onClick={save}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Save</span></div>
         </div>
       </Panel>
-      <Panel style={{ left: 1270, top: 130, width: 590, height: 830, padding: "10px 18px" }} title="Profile Detail">
+      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px" }} title="Profile Detail">
         {selP ? (
           <div style={{ marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>

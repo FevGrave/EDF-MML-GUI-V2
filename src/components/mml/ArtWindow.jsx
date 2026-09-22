@@ -9,7 +9,7 @@ export default function ArtWindow() {
   const rnd = () => setI(Math.floor(Math.random() * NAMES.length));
 
   return (
-    <div className="win artwin" style={{ left: 690, top: 130, width: 430, height: 600 }}>
+    <div className="win artwin" style={{ left: 620, top: 130, width: 430, height: 600 }}>
       <div className="artimg">
         <svg viewBox="0 0 430 554" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
           <rect width="430" height="554" fill="#0a0c0e" />

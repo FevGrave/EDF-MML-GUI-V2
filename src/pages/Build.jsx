@@ -18,7 +18,7 @@ export default function Build() {
 
   return (
     <>
-      <Panel style={{ left: 690, top: 130, width: 600, height: 830, padding: "10px 20px" }} title="Build">
+      <Panel style={{ left: 620, top: 130, width: 600, height: 830, padding: "10px 20px" }} title="Build">
         <div className="optrow"><span>Mode</span>
           <div className="seg">
             <button className={mode === "ni" ? "on" : ""} onClick={() => setMode("ni")}>NI Test</button>
@@ -37,7 +37,7 @@ export default function Build() {
         </div>
         <p className="cfdesc" style={{ marginTop: 18, color: busy ? "var(--warn)" : "var(--ok)" }}>{busy ? "Building…" : "Idle."}</p>
       </Panel>
-      <Panel style={{ left: 1310, top: 130, width: 550, height: 830, padding: "10px 18px" }} title="Build Log">
+      <Panel style={{ left: 1240, top: 130, width: 550, height: 830, padding: "10px 18px" }} title="Build Log">
         <div className="buildlog" style={{ marginTop: 8 }}>
           {log.map((l, i) => <div key={i} className={l.c}>{l.t}</div>)}
         </div>

@@ -25,7 +25,7 @@ export default function Home() {
   const [r, setR] = useState(null);
   useEffect(() => { bridge.getPreflight().then(setR); }, []);
 
-  if (!r) return <Panel style={{ left: 1140, top: 130, width: 720, height: 600, padding: 20 }} title="Preflight"><p className="cfdesc">Loading preflight…</p></Panel>;
+  if (!r) return <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: 20 }} title="Preflight"><p className="cfdesc">Loading preflight…</p></Panel>;
 
   const by = (id) => r.checks.find((c) => c.id === id);
   const hk = by("hakken_build"), mp = by("mppp"), ba = by("edfmodloader"), tools = by("edftools"), mml = by("mml_self");
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <>
       <ArtWindow />
-      <Panel style={{ left: 1140, top: 130, width: 720, height: 600, padding: "10px 20px" }} title="Preflight" right={<Pill className={r.warning_count ? "w" : ""}>{r.warning_count ? `${r.warning_count} warning${r.warning_count > 1 ? "s" : ""}` : "all clear"}</Pill>}>
+      <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: "10px 20px" }} title="Preflight" right={<Pill className={r.warning_count ? "w" : ""}>{r.warning_count ? `${r.warning_count} warning${r.warning_count > 1 ? "s" : ""}` : "all clear"}</Pill>}>
         <div className={`bigstat ${hk.state === "ok" ? "ok" : hk.state === "error" ? "bad" : ""}`}>
           <i className={`dm ${cls(hk.state)}`} />
           <div><b>HAKKEN engine <Chip>Build</Chip></b><small>{hk.detail}</small></div>
