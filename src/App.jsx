@@ -6,12 +6,18 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
-// Add page imports here
+import { MmlPaletteProvider } from '@/lib/mmlPalette';
+import MmlLayout from '@/components/mml/MmlLayout';
+import Home from '@/pages/Home';
+import Mods from '@/pages/Mods';
+import Build from '@/pages/Build';
+import Profiles from '@/pages/Profiles';
+import Settings from '@/pages/Settings';
+import Placeholder from '@/pages/Placeholder';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -20,21 +26,27 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
-      {/* Add your page Route elements here */}
+      <Route element={<MmlLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/mods" element={<Mods />} />
+        <Route path="/build" element={<Build />} />
+        <Route path="/profiles" element={<Profiles />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/save-sync" element={<Placeholder title="Save Sync" />} />
+        <Route path="/links" element={<Placeholder title="Links and Credits" />} />
+        <Route path="/play" element={<Placeholder title="Play Game" />} />
+      </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
@@ -42,13 +54,14 @@ const AuthenticatedApp = () => {
 
 
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
-          <AuthenticatedApp />
+          <MmlPaletteProvider>
+            <AuthenticatedApp />
+          </MmlPaletteProvider>
         </Router>
         <Toaster />
       </QueryClientProvider>
