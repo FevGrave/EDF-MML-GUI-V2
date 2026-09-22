@@ -113,8 +113,8 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 
 /* menu buttons */
 #menu{left:0;top:0;width:100%;height:100%;pointer-events:none}
-#menu .mb{pointer-events:auto;position:absolute}
-.mb{left:145px;width:455px;height:56px;cursor:pointer}
+#menu .mb{pointer-events:auto;position:absolute;left:145px}
+.mb{width:455px;height:56px;cursor:pointer}
 .mb .body{position:absolute;inset:0;
   background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.5) 70%,rgba(0,0,0,.38)),
     repeating-linear-gradient(115deg,rgba(255,255,255,.07) 0 3px,transparent 3px 22px);
@@ -140,7 +140,7 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .mb .u1{position:absolute;left:28px;right:0;bottom:6px;height:7px;background:var(--line);box-shadow:0 1px 0 #000}
 .mb .u2{position:absolute;left:28px;right:0;bottom:1px;height:3px;background:rgba(255,255,255,.35)}
 .mb .t{position:absolute;left:70px;top:4px;font:500 27px/42px var(--font);letter-spacing:.1em;color:#fff;text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap}
-.mb.f,.mb:hover{left:180px;width:440px;height:58px;margin-top:-2px}
+#menu .mb.f,#menu .mb:hover{left:180px;width:440px;height:58px;margin-top:-2px}
 .mb.f .body,.mb:hover .body{background:linear-gradient(90deg,rgba(255,140,40,.5),rgba(255,140,40,.28) 70%,rgba(255,140,40,.18)),repeating-linear-gradient(115deg,rgba(255,255,255,.1) 0 3px,transparent 3px 22px)}
 .mb.f .bev,.mb:hover .bev{height:46px;top:6px;background:linear-gradient(90deg,#ffc27a 0%,#ffc27a 58%,#c26a1a 80%,transparent 97%);border-top-color:#fff;border-bottom-color:var(--focus)}
 .mb.f .acc::before,.mb:hover .acc::before{border-color:var(--focus)}
