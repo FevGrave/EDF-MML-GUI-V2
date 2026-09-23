@@ -21,7 +21,7 @@ export default function Profiles() {
   return (
     <>
       <Panel style={{ left: 620, top: 130, width: 560, height: 830, padding: "10px 20px", display: "flex", flexDirection: "column" }} title="Profiles" right={<Pill className="w">{profiles.length} saved</Pill>}>
-        <div className="scroller" style={{ flex: 1, minHeight: 0, marginTop: 8 }}>
+        <div className="scroller" style={{ flex: 1, minHeight: 0, marginTop: 8, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
           {profiles.map((p) => (
             <div key={p.id} className={`modrow ${sel === p.id ? "sel" : ""}`} onClick={() => setSel(p.id)}>
               <span className="ord">◈</span>
@@ -42,7 +42,7 @@ export default function Profiles() {
           <div style={{ display: "flex", flexDirection: "column", flex: 1, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
             <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>{new Date(selP.timestamp).toLocaleString()}</p>
-            <div className="scroller" style={{ flex: 1, minHeight: 0 }}>
+            <div className="scroller" style={{ flex: 1, minHeight: 0, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
               {selP.mods?.map((m, i) => (
                 <div key={i} className="modrow">
                   <span className="ord">{i + 1}</span>
@@ -51,10 +51,10 @@ export default function Profiles() {
                 </div>
               ))}
             </div>
-            <div className="actrow">
-              <div className="mb big action" style={{ width: 130 }} onClick={loadP}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Load</span></div>
-              <div className="mb big action" style={{ width: 150 }} onClick={exp}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Export</span></div>
-              <div className="mb big action" style={{ width: 150 }} onClick={del}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Delete</span></div>
+            <div className="actrow" style={{ justifyContent: "space-between" }}>
+              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={loadP}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Load</span></div>
+              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={exp}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Export</span></div>
+              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={del}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Delete</span></div>
             </div>
           </div>
         ) : <p className="cfdesc" style={{ marginTop: 8 }}>Select or save a profile.</p>}
