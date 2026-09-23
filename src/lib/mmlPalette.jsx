@@ -21,7 +21,10 @@ const loadCustom = () => {
 
 export function MmlPaletteProvider({ children }) {
   const [palette, setPalette] = useState(() => localStorage.getItem("mml-palette") || "khaki");
-  const [custom, setCustom] = useState(loadCustom);
+  const [custom, setCustomState] = useState(loadCustom);
+  // merge a single colour override into the custom palette object — NOT a raw
+  // setState (calling that with (varName, hex) would clobber the whole object)
+  const setCustom = (varName, hex) => setCustomState((prev) => ({ ...prev, [varName]: hex }));
 
   useEffect(() => {
     const root = document.documentElement;
@@ -31,6 +34,7 @@ export function MmlPaletteProvider({ children }) {
       // base on khaki so the derived rgba vars (--panel, --row, --dia-*) resolve
       root.setAttribute("data-theme", "khaki");
       CUSTOM_FIELDS.forEach(({ var: v, def }) => root.style.setProperty(v, custom[v] || def));
+      localStorage.setItem("mml-custom-colors", JSON.stringify(custom));
     } else {
       root.setAttribute("data-theme", palette);
     }

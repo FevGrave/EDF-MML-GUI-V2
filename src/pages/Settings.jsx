@@ -53,11 +53,25 @@ export default function Settings() {
           <div className="optrow" style={{ marginTop: 8 }}><span>Background art</span>
             <div className="seg">
               {ART_MODES.map(([m, lbl]) => (
-                <button key={m} className={`palbtn ${art === m ? "on" : ""}`} onClick={() => setArt(m)}>{lbl}</button>
+                <button key={m} className={`palbtn ${art.mode === m ? "on" : ""}`} onClick={() => setArt({ mode: m })}>{lbl}</button>
               ))}
             </div>
           </div>
-          <p className="cfdesc" style={{ marginTop: 16 }}>Palette switches the HUD colour scheme — pick a preset or tune every colour with the Custom editor. Background art chooses what shows on the Home screen: all art, only custom modded images, only built-in art, or nothing.</p>
+          {art.mode !== "none" && (
+            <div className="optrow" style={{ height: "auto", padding: "8px 0", flexWrap: "wrap" }}><span>Auto-advance</span>
+              <div className="seg">
+                <button className={`palbtn ${art.auto ? "on" : ""}`} onClick={() => setArt({ auto: !art.auto })}>{art.auto ? "On" : "Off"}</button>
+                <select className="mmlsel" style={{ height: 34, fontSize: 14, padding: "0 8px" }} value={art.pick} onChange={(e) => setArt({ pick: e.target.value })}>
+                  <option value="next">Next in line</option>
+                  <option value="random">Random pick</option>
+                </select>
+                <span style={{ font: "500 16px var(--mono)", color: "#cfd", display: "flex", alignItems: "center", gap: 6, padding: "0 8px" }}>every
+                  <input type="number" min={2} max={120} className="mmlin" style={{ width: 56, height: 30, fontSize: 14, textAlign: "center", padding: "0 4px" }} value={art.interval} onChange={(e) => setArt({ interval: Math.max(2, Math.min(120, parseInt(e.target.value, 10) || 8)) })} />s
+                </span>
+              </div>
+            </div>
+          )}
+          <p className="cfdesc" style={{ marginTop: 16 }}>Palette switches the HUD colour scheme — pick a preset or tune every colour with the Custom editor. Background art chooses what shows on the Home screen (all / modded / MML / none); auto-advance cycles images every few seconds, in order or at random.</p>
         </div>
 
         {/* right: game working directories */}
