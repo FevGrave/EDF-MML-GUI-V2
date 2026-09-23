@@ -15,10 +15,19 @@ import Profiles from '@/pages/Profiles';
 import Settings from '@/pages/Settings';
 import Placeholder from '@/pages/Placeholder';
 
+// The packaged desktop build (Mods/MML_MergeCommand, loaded from pywebview) has
+// no Base44-hosted backend behind it -- see claude/HAKKEN_GUI_backend.md,
+// "ModNexus is a frontend shell only, Base44's own auth/hosting is dev-time
+// scaffolding, not shipped." VITE_MML_STANDALONE=true (set in .env.production
+// for that build only, never in `base44 dev`/hosted preview) skips Base44's
+// own login/public-settings gate entirely instead of relying on it failing
+// open by accident when there's no reachable Base44 app behind this appId.
+const STANDALONE = import.meta.env.VITE_MML_STANDALONE === 'true';
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (!STANDALONE && (isLoadingPublicSettings || isLoadingAuth)) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
@@ -26,7 +35,7 @@ const AuthenticatedApp = () => {
     );
   }
 
-  if (authError) {
+  if (!STANDALONE && authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {

@@ -48,7 +48,7 @@ export default function Home() {
         <PfRow dot={cls(mml.state)} name="MML MergeCommand" cat="Core" note={mml.detail}><Badge state={mml.state} /><Pill className={cls(mml.state)}>{word(mml.state, "Up to date", "Update", "Error", "Offline")}</Pill></PfRow>
         <div className="st">
           <Gauge label="Weapons" value={wpct} />
-          <div className="gv"><b>{w ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : "—"}</b><span>slots used</span></div>
+          <div className="gv"><b>{w && w.used != null && w.capacity != null ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : (w && w.capacity != null ? `— / ${w.capacity.toLocaleString()}` : "—")}</b><span>slots used</span></div>
           <div className="r"><span>Mission packs</span><small>{pk ? pk.total : "—"}</small></div>
           <Gauge label="Mods on" value={mpct} warn={mo && mo.on < mo.total} />
           <div className="gv"><b>{mo ? `${mo.on} of ${mo.total}` : "—"}</b><span>enabled</span></div>

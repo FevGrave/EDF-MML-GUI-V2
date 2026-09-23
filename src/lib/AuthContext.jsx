@@ -4,17 +4,24 @@ import { appParams } from '@/lib/app-params';
 
 const AuthContext = createContext();
 
+// See src/App.jsx for the full rationale: the packaged desktop build has no
+// Base44-hosted backend behind it, so this skips the network round trip
+// entirely instead of firing it and discarding a guaranteed-to-fail result.
+const STANDALONE = import.meta.env.VITE_MML_STANDALONE === 'true';
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
-  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(!STANDALONE);
+  const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(!STANDALONE);
   const [authError, setAuthError] = useState(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  const [authChecked, setAuthChecked] = useState(STANDALONE);
   const [appPublicSettings, setAppPublicSettings] = useState(null); // Contains only { id, public_settings }
 
   useEffect(() => {
-    checkAppState();
+    if (!STANDALONE) {
+      checkAppState();
+    }
   }, []);
 
   const checkAppState = async () => {
