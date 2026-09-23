@@ -29,9 +29,8 @@ export default function Home() {
 
   const by = (id) => r.checks.find((c) => c.id === id);
   const hk = by("hakken_build"), mp = by("mppp"), ba = by("edfmodloader"), tools = by("edftools"), mml = by("mml_self");
-  const w = r.counts.weapons?.data, mo = r.counts.mods?.data, md = r.counts.mode?.data;
+  const w = r.counts.weapons?.data, md = r.counts.mode?.data;
   const wpct = w && w.capacity ? (w.used / w.capacity) * 100 : 0;
-  const mpct = mo ? (mo.on / mo.total) * 100 : 0;
 
   return (
     <>
@@ -49,7 +48,6 @@ export default function Home() {
         <div className="st">
           <Gauge label="Weapons" value={wpct} />
           <div className="gv"><b>{w && w.used != null && w.capacity != null ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : (w && w.capacity != null ? `— / ${w.capacity.toLocaleString()}` : "—")}</b><span>slots used</span></div>
-          <Gauge label="Mods on" value={mpct} warn={mo && mo.on < mo.total} />
           <div className="r"><span>Loaded profile</span><small>{r.loaded_profile || "—"}</small></div>
           <div className="r"><span>Mode</span><small>{md ? md.ni_mode : "—"}</small></div>
         </div>
