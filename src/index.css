@@ -229,8 +229,8 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 
 /* art window */
 .artwin{padding:0}
-.artimg{position:absolute;left:0;right:0;top:0;bottom:46px;background:#0a0c0e}
-.artcap{position:absolute;left:0;right:0;bottom:0;height:46px;display:flex;align-items:center;gap:10px;padding:0 10px;background:rgba(0,0,0,.72);border-top:3px solid var(--line);font:500 20px var(--font);letter-spacing:.08em;color:#fff}
+.artimg{position:absolute;left:0;right:0;top:46px;bottom:0;background:#0a0c0e}
+.artcap{position:absolute;left:0;right:0;top:0;bottom:auto;height:46px;display:flex;align-items:center;gap:10px;padding:0 10px;background:rgba(0,0,0,.72);border-bottom:3px solid var(--line);font:500 20px var(--font);letter-spacing:.08em;color:#fff}
 .artcap span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .artcap em{font:15px var(--mono);color:#cfd;opacity:.7;font-style:normal}
 .artcap button{width:34px;height:30px;background:var(--row);color:#fff;border:2px solid var(--frame);cursor:pointer;font-size:14px;padding:0}
