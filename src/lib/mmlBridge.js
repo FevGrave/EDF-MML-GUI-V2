@@ -154,6 +154,15 @@ export const bridge = {
     if (p) p.mods = p.mods.filter((x) => x.id !== modId);
     PLUGINS = PLUGINS.filter((x) => x.id !== modId);
   },
+  async moveModConfig(profileId, fromIndex, toIndex) {
+    if (API()?.move_mod_config) return API().move_mod_config(profileId, fromIndex, toIndex);
+    const p = PROFILES.find((x) => x.id === profileId);
+    if (!p || !p.mods) return;
+    const arr = p.mods;
+    if (toIndex < 0 || toIndex >= arr.length) return;
+    const [item] = arr.splice(fromIndex, 1);
+    arr.splice(toIndex, 0, item);
+  },
   async getBuildPlan(type) {
     if (API()?.get_build_plan) return API().get_build_plan(type);
     const base = [

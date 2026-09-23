@@ -31,6 +31,11 @@ export default function Profiles() {
     setMsg("Uninstalled " + m.name + " — files listed in its config were removed.");
     load();
   };
+  const moveMod = async (fromIdx, toIdx) => {
+    if (!selP) return;
+    await bridge.moveModConfig(selP.id, fromIdx, toIdx);
+    load();
+  };
 
   return (
     <>
@@ -59,14 +64,21 @@ export default function Profiles() {
             <p className="cfn">{selP.name}</p>
             <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>{new Date(selP.timestamp).toLocaleString()}</p>
             <div className="scroller" style={{ flex: 1, minHeight: 0, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
-              {selP.mods?.map((m, i) => (
-                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "36px 1fr auto auto" }}>
+              {selP.mods?.map((m, i) => {
+                const last = (selP.mods?.length || 0) - 1;
+                return (
+                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "36px 1fr auto auto auto" }}>
                   <span className="ord">{i + 1}</span>
                   <div><b>{m.name}</b><span className="catsub">{m.category}</span></div>
+                  <div className="ordbtns">
+                    <button onClick={(e) => { e.stopPropagation(); moveMod(i, i - 1); }} disabled={i === 0} style={i === 0 ? { opacity: .3, cursor: "default" } : undefined}>▲</button>
+                    <button onClick={(e) => { e.stopPropagation(); moveMod(i, i + 1); }} disabled={i === last} style={i === last ? { opacity: .3, cursor: "default" } : undefined}>▼</button>
+                  </div>
                   <Toggle on={m.enabled} onClick={(e) => { e.stopPropagation(); toggleMod(m, !m.enabled); }} />
                   <button className="unbtn" title="Uninstall" onClick={(e) => { e.stopPropagation(); uninstallMod(m); }}>✕</button>
                 </div>
-              ))}
+                );
+              })}
             </div>
             <DualAction items={[
               { label: "Export", onClick: exp },
