@@ -26,6 +26,63 @@ let PROFILES = [
 
 let LOADED_PROFILE = (PROFILES[0] && PROFILES[0].name) || "—";
 
+// Real ConfigBuildAll.py pipeline stages. NI Test and Installer each run 9
+// stages — a different 9. `match` is the exact substring ConfigBuildAll.py
+// prints to AA-Log.txt for that stage; the Build page lights its pill when the
+// substring appears in the streamed log. The Missions stage (NI only) blocks on
+// a separate GamemodeConfig popup, so it gets a distinct "waiting for input"
+// state instead of a spinner. (A "Compress Files" stage exists in source but is
+// disabled/commented out in both modes, so it is not listed.)
+const STAGES_NI = [
+  { id: "replace", label: "Data replacement", match: "Replacing data strings..." },
+  { id: "yoink", label: "Yoink configs", match: "Yoinking non-additive configs..." },
+  { id: "config", label: "Build config", match: "Building config..." },
+  { id: "missions", label: "Mission packs", match: "EDIT what mission pack this player wants...", waitForInput: true },
+  { id: "text", label: "Text tables", match: "Processing text tables..." },
+  { id: "subs", label: "Subtitles", match: "Processing subtitles..." },
+  { id: "weapons", label: "Weapon data", match: "Appending weapon data..." },
+  { id: "culldlc", label: "Cull DLC weapons", match: "Culling DLC weapon tables..." },
+  { id: "cullmod", label: "Cull modded weapons", match: "Culling modded weapon tables..." },
+];
+const STAGES_INSTALLER = [
+  { id: "replace", label: "Data replacement", match: "Replacing data strings..." },
+  { id: "yoink", label: "Yoink configs", match: "Yoinking non-additive configs..." },
+  { id: "config", label: "Build config", match: "Building config..." },
+  { id: "text", label: "Text tables", match: "Processing text tables..." },
+  { id: "subs", label: "Subtitles", match: "Processing subtitles..." },
+  { id: "weapons", label: "Weapon data", match: "Appending weapon data..." },
+  { id: "sgo", label: "SGO conversion", match: "Converting to SGO via sgott.exe..." },
+  { id: "rename", label: "Rename tables", match: "Renaming converted text-table files..." },
+  { id: "move", label: "Move to Mods/", match: "Moving files into Mods/ install locations..." },
+];
+export function buildStages(mode) { return mode === "ni" ? STAGES_NI : STAGES_INSTALLER; }
+
+// Mock build stream for browser preview. The real backend (run_build_async /
+// get_build_status) streams AA-Log.txt from ConfigBuildAll.py; the mock replays
+// the same stage strings so the GUI behaves identically.
+let BUILD = { running: false, idx: 0, log: "", finished: false, ok: false, waiting: false, timer: null };
+function startMockBuild(kind) {
+  if (BUILD.timer) clearTimeout(BUILD.timer);
+  const stages = buildStages(kind);
+  BUILD = { running: true, stages, idx: 0, log: "", finished: false, ok: false, waiting: false, timer: null };
+  const emit = () => {
+    if (BUILD.idx >= stages.length) {
+      BUILD.running = false; BUILD.finished = true; BUILD.ok = true; BUILD.waiting = false;
+      BUILD.log += (BUILD.log ? "\n" : "") + (kind === "ni" ? "NI build complete." : "Installer build complete.");
+      return;
+    }
+    const st = stages[BUILD.idx];
+    BUILD.log += (BUILD.log ? "\n" : "") + st.match;
+    BUILD.idx += 1;
+    BUILD.waiting = !!st.waitForInput;
+    BUILD.timer = setTimeout(emit, st.waitForInput ? 2200 : 650);
+  };
+  BUILD.timer = setTimeout(emit, 400);
+}
+function mockBuildStatus() {
+  return { running: BUILD.running, log: BUILD.log, finished: BUILD.finished, ok: BUILD.ok, waiting: BUILD.waiting };
+}
+
 export const bridge = {
   async getPreflight() {
     if (API()?.get_preflight) return API().get_preflight();
@@ -115,6 +172,15 @@ export const bridge = {
     return type === "ni"
       ? { text: "NI build complete — 1,565 weapons, 4 packs merged to NI folder.", cls: "ok" }
       : { text: "Installer packaged: mergcommand_installer.exe", cls: "ok" };
+  },
+  async run_build_async(kind) {
+    if (API()?.run_build_async) return API().run_build_async(kind);
+    startMockBuild(kind);
+    return { started: true };
+  },
+  async get_build_status() {
+    if (API()?.get_build_status) return API().get_build_status();
+    return mockBuildStatus();
   },
   async runCommand(raw) {
     if (API()?.run_command) return API().run_command(raw);

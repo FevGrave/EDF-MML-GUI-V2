@@ -304,6 +304,8 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .edfsteps .stp.act i{background:var(--focus);box-shadow:0 0 8px var(--focus);animation:dotPulse 1s ease-in-out infinite}
 .edfsteps .stp.done{border-color:var(--ok);color:var(--ok)}
 .edfsteps .stp.done i{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.edfsteps .stp.wait{border-color:var(--warn);color:var(--warn);background:rgba(255,210,58,.14)}
+.edfsteps .stp.wait i{background:var(--warn);box-shadow:0 0 8px var(--warn);animation:dotPulse 1s ease-in-out infinite}
 @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
 .savebar{display:flex;gap:12px;align-items:center;margin-top:14px}
 .actrow{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
