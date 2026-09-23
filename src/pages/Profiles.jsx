@@ -33,7 +33,7 @@ export default function Profiles() {
           {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Save your current setup below.</p>}
         </div>
         <div className="savebar">
-          <input className="mmlin" value={name} onChange={(e) => setName(e.target.value)} placeholder="Profile name" />
+          <input className="mmlin" style={{ transform: "translateY(-4px)" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="Profile name" />
           <div className="mb big action" style={{ width: 140 }} onClick={save}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Save</span></div>
         </div>
       </Panel>
