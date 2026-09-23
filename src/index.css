@@ -287,12 +287,15 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .buildlog{height:740px;overflow-y:auto;font:17px/1.6 var(--mono);color:#7dffb0;white-space:pre-wrap}
 .buildlog .w{color:var(--warn)}.buildlog .b{color:var(--bad)}.buildlog .d{color:#a9a58f}.buildlog .ok{color:#7dffb0}
 .edfbar{position:relative;height:42px;margin-top:16px;border:3px solid var(--frame);background:rgba(0,0,0,.72);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),0 2px 6px rgba(0,0,0,.4)}
-.edfbar .fill{position:absolute;left:0;top:0;bottom:0;width:var(--v,0%);transition:width .45s ease;
-  background:repeating-linear-gradient(90deg,#ff6a5a 0 16px,#ffae3a 16px 32px,#ffe23a 32px 48px,#5dff9a 48px 64px,#5ad0ff 64px 80px,#b45aff 80px 96px);
-  background-size:96px 100%;animation:edfHue 3s linear infinite;box-shadow:0 0 10px rgba(255,140,40,.7)}
-.edfbar .fill::after{content:"EDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDF";position:absolute;inset:0;
-  font:900 24px/42px var(--font);letter-spacing:0;color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill;
-  white-space:nowrap;mix-blend-mode:overlay;opacity:.75;text-shadow:0 0 4px #000}
+.edfbar::before{content:"EDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDF";position:absolute;inset:0;
+  font:900 24px/42px var(--font);letter-spacing:0;color:#3a3526;-webkit-text-stroke:1px #000;paint-order:stroke fill;
+  white-space:nowrap;opacity:.5}
+.edfbar .fill{position:absolute;left:0;top:0;bottom:0;width:var(--v,0%);transition:width .45s ease;overflow:hidden;background:rgba(255,255,255,.05)}
+.edfbar .fill::after{content:"EDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDFEDF";position:absolute;inset:0;
+  font:900 24px/42px var(--font);letter-spacing:0;color:transparent;
+  background:linear-gradient(90deg,#ff6a5a,#ffae3a,#ffe23a,#5dff9a,#5ad0ff,#b45aff,#ff6a5a);background-size:96px 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-stroke:2px #000;paint-order:stroke fill;
+  white-space:nowrap;text-shadow:0 0 6px rgba(255,140,40,.55);animation:edfHue 3s linear infinite}
 @keyframes edfHue{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
 .edfsteps{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .edfsteps .stp{display:flex;align-items:center;gap:6px;padding:4px 10px;border:2px solid var(--frame2);background:rgba(0,0,0,.4);font:600 15px var(--font);letter-spacing:.06em;color:#a9a58f;text-transform:uppercase}
