@@ -126,13 +126,12 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
   border-top:3px solid rgba(255,255,255,.9);border-bottom:3px solid var(--line)}
 .mb .bev::before{content:"";position:absolute;left:34%;top:8%;bottom:8%;width:0;border-left:2px dotted rgba(255,255,255,.75);transform:skewX(-32deg)}
 .mb .bev::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.06) 32%,rgba(0,0,0,.20) 60%,rgba(0,0,0,.04) 100%)}
-#menu .mb .bev{width:100%;clip-path:polygon(0 0,100% 0,100% 58%,0 100%);
-  background:linear-gradient(90deg,var(--bevel1) 0%,var(--bevel1) 52%,var(--bevel2) 74%,rgba(0,0,0,.28) 90%,transparent 100%);
+#menu .mb .bev{width:100%;clip-path:polygon(0 0,82% 0,84% 7%,88% 0,100% 0,100% 22%,95% 32%,100% 46%,100% 58%,0 100%);
+  background:radial-gradient(120% 200% at 96% 0%,rgba(20,8,2,.85) 0%,transparent 40%),linear-gradient(90deg,var(--bevel1) 0%,var(--bevel1) 52%,var(--bevel2) 74%,#2c1608 88%,#5a260c 95%,transparent 100%);
   box-shadow:inset 0 3px 0 rgba(255,255,255,.9);border:0}
 #menu .mb .bev::after{content:"";position:absolute;top:0;left:-22%;width:18%;height:100%;inset:auto;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);
   mix-blend-mode:color-dodge;animation:bevSheen 4.5s linear infinite}
-#menu .mb:hover .bev,#menu .mb.f .bev{background:linear-gradient(90deg,#ffc27a 0%,#ffc27a 52%,#c26a1a 74%,rgba(0,0,0,.28) 90%,transparent 100%);box-shadow:inset 0 3px 0 #fff}
 @keyframes bevSheen{0%{left:-22%}55%{left:104%}100%{left:104%}}
 .mb .acc{position:absolute;left:-24px;top:0;width:22px;height:100%;pointer-events:none}
 .mb .acc::before{content:"";position:absolute;left:0;top:12%;bottom:12%;width:10px;border:2px solid var(--line);border-right:0}
@@ -140,14 +139,27 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .mb .u1{position:absolute;left:28px;right:0;bottom:6px;height:7px;background:var(--line);box-shadow:0 1px 0 #000}
 .mb .u2{position:absolute;left:28px;right:0;bottom:1px;height:3px;background:rgba(255,255,255,.35)}
 .mb .t{position:absolute;left:70px;top:4px;font:500 27px/42px var(--font);letter-spacing:.1em;color:#fff;text-shadow:0 2px 0 #000,0 0 5px #000;white-space:nowrap}
-#menu .mb.f,#menu .mb:hover{left:180px;width:440px;height:58px;margin-top:-2px}
-.mb.f .body,.mb:hover .body{background:linear-gradient(90deg,rgba(255,140,40,.5),rgba(255,140,40,.28) 70%,rgba(255,140,40,.18)),repeating-linear-gradient(115deg,rgba(255,255,255,.1) 0 3px,transparent 3px 22px)}
-.mb.f .bev,.mb:hover .bev{height:46px;top:6px;background:linear-gradient(90deg,#ffc27a 0%,#ffc27a 58%,#c26a1a 80%,transparent 97%);border-top-color:#fff;border-bottom-color:var(--focus)}
-.mb.f .acc::before,.mb:hover .acc::before{border-color:var(--focus)}
-.mb.f .acc::after,.mb:hover .acc::after{background:var(--focus);box-shadow:5px 0 0 #fff}
-.mb.f .u1,.mb:hover .u1{background:linear-gradient(90deg,#ff9a2a,#ffb45a)}
-.mb.f .mark{position:absolute;left:-38px;top:16px;width:32px;height:16px;background:var(--focus);box-shadow:0 0 8px #ff8a1f88;display:block}
-.mb .mark{display:none}
+/* active (current route) tab: strong orange + burnt edge + side mark */
+#menu .mb.f{left:180px;width:440px;height:58px;margin-top:-2px}
+#menu .mb.f .body{background:linear-gradient(90deg,rgba(255,140,40,.55),rgba(255,140,40,.3) 70%,rgba(255,140,40,.18)),repeating-linear-gradient(115deg,rgba(255,255,255,.12) 0 3px,transparent 3px 22px)}
+#menu .mb.f .bev{height:46px;top:6px;background:radial-gradient(120% 200% at 96% 0%,rgba(20,8,2,.85) 0%,transparent 40%),linear-gradient(90deg,#ffc27a 0%,#ffc27a 52%,#c26a1a 74%,#2c1608 88%,#5a260c 95%,transparent 100%);box-shadow:inset 0 3px 0 #fff}
+#menu .mb.f .acc::before{border-color:var(--focus)}
+#menu .mb.f .acc::after{background:var(--focus);box-shadow:5px 0 0 #fff}
+#menu .mb.f .u1{background:linear-gradient(90deg,#ff9a2a,#ffb45a)}
+#menu .mb .mark{display:none}
+#menu .mb.f .mark{position:absolute;left:-38px;top:16px;width:32px;height:16px;background:var(--focus);box-shadow:0 0 8px #ff8a1f88;display:block}
+/* hover / keyboard focus: a deliberately softer cue — never the current-tab look */
+#menu .mb:hover,#menu .mb.kf{left:150px;width:450px}
+#menu .mb:hover .body,#menu .mb.kf .body{background:linear-gradient(90deg,rgba(255,140,40,.18),rgba(255,140,40,.06) 70%,transparent),repeating-linear-gradient(115deg,rgba(255,255,255,.07) 0 3px,transparent 3px 22px)}
+#menu .mb:hover .bev,#menu .mb.kf .bev{height:48px;top:5px;background:radial-gradient(120% 200% at 96% 0%,rgba(20,8,2,.8) 0%,transparent 42%),linear-gradient(90deg,var(--bevel1) 0%,var(--bevel1) 52%,var(--bevel2) 74%,#2c1608 88%,#5a260c 95%,transparent 100%);box-shadow:inset 0 3px 0 rgba(255,255,255,.9)}
+#menu .mb:hover .acc::after,#menu .mb.kf .acc::after{background:var(--focus2);box-shadow:5px 0 0 rgba(255,255,255,.55)}
+#menu .mb:hover .u1,#menu .mb.kf .u1{background:linear-gradient(90deg,#b97a32,#d99a4a)}
+/* action buttons (non-menu) keep their hover highlight */
+.mb:hover .body,.mb.f .body{background:linear-gradient(90deg,rgba(255,140,40,.5),rgba(255,140,40,.28) 70%,rgba(255,140,40,.18)),repeating-linear-gradient(115deg,rgba(255,255,255,.1) 0 3px,transparent 3px 22px)}
+.mb:hover .bev,.mb.f .bev{height:46px;top:6px;background:linear-gradient(90deg,#ffc27a 0%,#ffc27a 58%,#c26a1a 80%,transparent 97%);border-top-color:#fff;border-bottom-color:var(--focus)}
+.mb:hover .acc::before,.mb.f .acc::before{border-color:var(--focus)}
+.mb:hover .acc::after,.mb.f .acc::after{background:var(--focus);box-shadow:5px 0 0 #fff}
+.mb:hover .u1,.mb.f .u1{background:linear-gradient(90deg,#ff9a2a,#ffb45a)}
 .mb.off{cursor:not-allowed}
 .mb.off .t{opacity:.5}.mb.off .bev{filter:grayscale(1) brightness(.75)}.mb.off .acc{filter:grayscale(1) brightness(.75)}.mb.off .u1{background:#777}
 

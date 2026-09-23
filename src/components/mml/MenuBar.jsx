@@ -5,11 +5,13 @@ import { MENU } from "@/lib/mmlMenu";
 export default function MenuBar({ onFocus }) {
   const nav = useNavigate();
   const loc = useLocation();
+  const [activeIdx, setActiveIdx] = useState(0);
   const [focusIdx, setFocusIdx] = useState(0);
 
   useEffect(() => {
     const i = MENU.findIndex((m) => m.path === loc.pathname);
     if (i >= 0) {
+      setActiveIdx(i);
       setFocusIdx(i);
       onFocus?.(MENU[i].help);
     }
@@ -36,11 +38,11 @@ export default function MenuBar({ onFocus }) {
   }, [focusIdx, nav, onFocus]);
 
   return (
-    <div id="menu">
+    <div id="menu" onMouseLeave={() => setFocusIdx(activeIdx)}>
       {MENU.map((m, i) => (
         <div
           key={m.path}
-          className={`mb ${i === focusIdx ? "f" : ""} ${m.off ? "off" : ""}`}
+          className={`mb ${i === activeIdx ? "f" : ""} ${i === focusIdx && i !== activeIdx ? "kf" : ""} ${m.off ? "off" : ""}`}
           style={{ top: 148 + i * 70 + "px" }}
           data-help={m.help}
           onMouseEnter={() => { if (!m.off) { setFocusIdx(i); onFocus?.(m.help); } }}
