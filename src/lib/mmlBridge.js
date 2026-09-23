@@ -80,6 +80,18 @@ export const bridge = {
     if (API()?.delete_profile) return API().delete_profile(id);
     PROFILES = PROFILES.filter((x) => x.id !== id);
   },
+  async getBuildPlan(type) {
+    if (API()?.get_build_plan) return API().get_build_plan(type);
+    const base = [
+      { id: "order", label: "Load order", log: "Resolving plugin load order… 6 plugins", cls: "ok" },
+      { id: "weapons", label: "Weapons", log: "Merging weapon tables… 1565 rows", cls: "ok" },
+      { id: "missions", label: "Missions", log: "Merging mission packs… 4 packs", cls: "ok" },
+      { id: "text", label: "Text maps", log: "Merging text maps… OK", cls: "ok" },
+      { id: "conflicts", label: "Conflicts", log: "Resolving conflicts… 2 resolved", cls: "w" },
+      { id: "bake", label: "Bake files", log: "Baking raw game files… done", cls: "ok" },
+    ];
+    return type === "ni" ? base : [...base, { id: "package", label: "Installer", log: "Packaging installer… mergcommand_installer.exe", cls: "ok" }];
+  },
   async runBuild(type) {
     if (API()?.run_build) return API().run_build(type);
     await new Promise((r) => setTimeout(r, 600));
