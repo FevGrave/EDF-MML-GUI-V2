@@ -25,7 +25,7 @@ export default function MmlLayout() {
           <SceneBackground />
           <div className="ban" style={{ top: 40 }}>
             <span className="cap l" /><span className="cap r" />
-            <div className="tx">MML MergeCommand</div>
+            <div className="tx">EDF　Multimod　Loader</div>
           </div>
           <div className="ban" style={{ top: 975, height: 60 }}>
             <span className="cap l" /><span className="cap r" />
