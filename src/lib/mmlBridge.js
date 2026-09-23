@@ -80,6 +80,20 @@ export const bridge = {
     if (API()?.delete_profile) return API().delete_profile(id);
     PROFILES = PROFILES.filter((x) => x.id !== id);
   },
+  async toggleModConfig(profileId, modId, enabled) {
+    if (API()?.toggle_mod_config) return API().toggle_mod_config(profileId, modId, enabled);
+    const p = PROFILES.find((x) => x.id === profileId);
+    const m = p && p.mods.find((x) => x.id === modId);
+    if (m) m.enabled = enabled;
+    const pl = PLUGINS.find((x) => x.id === modId);
+    if (pl) pl.enabled = enabled;
+  },
+  async uninstallModConfig(profileId, modId) {
+    if (API()?.uninstall_mod_config) return API().uninstall_mod_config(profileId, modId);
+    const p = PROFILES.find((x) => x.id === profileId);
+    if (p) p.mods = p.mods.filter((x) => x.id !== modId);
+    PLUGINS = PLUGINS.filter((x) => x.id !== modId);
+  },
   async getBuildPlan(type) {
     if (API()?.get_build_plan) return API().get_build_plan(type);
     const base = [

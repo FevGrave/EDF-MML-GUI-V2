@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { bridge } from "@/lib/mmlBridge";
 import Panel from "@/components/mml/Panel";
 import Pill from "@/components/mml/Pill";
+import Toggle from "@/components/mml/Toggle";
+import DualAction from "@/components/mml/DualAction";
 
 export default function Profiles() {
   const [profiles, setProfiles] = useState([]);
@@ -16,7 +18,19 @@ export default function Profiles() {
   const save = async () => { if (!name.trim()) return; await bridge.saveProfile(name.trim()); setName(""); setMsg("Profile saved."); load(); };
   const loadP = async () => { if (!selP) return; await bridge.loadProfile(selP.id); setMsg('Profile "' + selP.name + '" loaded.'); };
   const exp = async () => { if (!selP) return; const r = await bridge.exportProfile(selP.id); setMsg("Exported: " + r.text); };
-  const del = async () => { if (!selP) return; await bridge.deleteProfile(selP.id); setMsg("Profile deleted."); load(); };
+  const del = async () => { if (!selP) return; await bridge.deleteProfile(selP.id); setMsg("Profile deleted."); setSel(null); load(); };
+
+  const toggleMod = async (m, enabled) => {
+    if (!selP) return;
+    await bridge.toggleModConfig(selP.id, m.id, enabled);
+    load();
+  };
+  const uninstallMod = async (m) => {
+    if (!selP) return;
+    await bridge.uninstallModConfig(selP.id, m.id);
+    setMsg("Uninstalled " + m.name + " — files listed in its config were removed.");
+    load();
+  };
 
   return (
     <>
@@ -30,32 +44,34 @@ export default function Profiles() {
               <span /><span />
             </div>
           ))}
-          {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Save your current setup below.</p>}
+          {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Name it below and press Save.</p>}
         </div>
-        <div className="savebar">
-          <input className="mmlin" style={{ transform: "translateY(-4px)" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="Profile name" />
-          <div className="mb big action" style={{ width: 140 }} onClick={save}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Save</span></div>
-        </div>
+        <input className="mmlin" style={{ marginTop: 14, width: "100%" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="Profile name" />
+        <DualAction items={[
+          { label: "Save", onClick: save },
+          { label: "Load", onClick: loadP },
+        ]} />
       </Panel>
-      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Profile Detail">
+
+      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
         {selP ? (
           <div style={{ display: "flex", flexDirection: "column", flex: 1, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
             <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>{new Date(selP.timestamp).toLocaleString()}</p>
             <div className="scroller" style={{ flex: 1, minHeight: 0, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
               {selP.mods?.map((m, i) => (
-                <div key={i} className="modrow">
+                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "36px 1fr auto auto" }}>
                   <span className="ord">{i + 1}</span>
                   <div><b>{m.name}</b><span className="catsub">{m.category}</span></div>
-                  <span /><Pill className={m.enabled ? "" : "mute"}>{m.enabled ? "on" : "off"}</Pill><span />
+                  <Toggle on={m.enabled} onClick={(e) => { e.stopPropagation(); toggleMod(m, !m.enabled); }} />
+                  <button className="unbtn" title="Uninstall" onClick={(e) => { e.stopPropagation(); uninstallMod(m); }}>✕</button>
                 </div>
               ))}
             </div>
-            <div className="actrow" style={{ justifyContent: "space-between" }}>
-              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={loadP}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Load</span></div>
-              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={exp}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Export</span></div>
-              <div className="mb big action" style={{ width: 150, flex: "none" }} onClick={del}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Delete</span></div>
-            </div>
+            <DualAction items={[
+              { label: "Export", onClick: exp },
+              { label: "Delete", onClick: del },
+            ]} />
           </div>
         ) : <p className="cfdesc" style={{ marginTop: 8 }}>Select or save a profile.</p>}
         {msg && <p className="cfdesc" style={{ marginTop: 12, color: "var(--ok)" }}>{msg}</p>}
