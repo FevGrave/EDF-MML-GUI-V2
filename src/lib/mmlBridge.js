@@ -11,17 +11,24 @@ const API = () =>
 const clone = (x) => JSON.parse(JSON.stringify(x));
 
 let PLUGINS = [
-  { id: "p1", name: "edf5_native_fix.dll", type: "dll", folder: "native", category: "Native", enabled: true, order: 0, conflicts: [] },
-  { id: "p2", name: "modern_camera.dll", type: "dll", folder: "camera", category: "Camera", enabled: true, order: 1, conflicts: [] },
-  { id: "p3", name: "input_remap.txt", type: "txt", folder: "PatchKeys", category: "Input", enabled: true, order: 2, conflicts: [] },
-  { id: "p4", name: "alpha_balance.txt", type: "txt", folder: "PatchTables", category: "Balance", enabled: false, order: 3, conflicts: ["Overwrites weapon table rows also patched by redux_overhaul"] },
-  { id: "p5", name: "redux_overhaul.txt", type: "txt", folder: "PatchTables", category: "Core", enabled: true, order: 4, conflicts: ["Overwrites weapon table rows also patched by alpha_balance"] },
-  { id: "p6", name: "armor_skins.txt", type: "txt", folder: "Visual", category: "Visual", enabled: true, order: 5, conflicts: [] },
+  { id: "p1", name: "EDF5_NativeRenderer_Fix_x64_r3.dll", type: "dll", folder: "native", category: "Native", enabled: true, order: 0, conflicts: [] },
+  { id: "p2", name: "ModernCamera_OverTheShoulder_v4_x64.dll", type: "dll", folder: "camera", category: "Camera", enabled: true, order: 1, conflicts: [] },
+  { id: "p3", name: "PatchKeys_KeyboardRemap_Expanded_Set2.txt", type: "txt", folder: "PatchKeys", category: "Input", enabled: true, order: 2, conflicts: [] },
+  { id: "p4", name: "PatchTables_AlphaBalance_WeaponTuning_Hotfix.txt", type: "txt", folder: "PatchTables", category: "Balance", enabled: false, order: 3, conflicts: ["Overwrites weapon table rows also patched by PatchTables_ReduxOverhaul_FullRebalance"] },
+  { id: "p5", name: "PatchTables_ReduxOverhaul_FullRebalance_v2.txt", type: "txt", folder: "PatchTables", category: "Core", enabled: true, order: 4, conflicts: ["Overwrites weapon table rows also patched by PatchTables_AlphaBalance_WeaponTuning_Hotfix"] },
+  { id: "p6", name: "Visual_ArmorSkinPack_Apocalypse_Edition.txt", type: "txt", folder: "Visual", category: "Visual", enabled: true, order: 5, conflicts: [] },
+  { id: "p7", name: "Native_FPSUnlock_144Hz_Loader_Fix.dll", type: "dll", folder: "native", category: "Native", enabled: true, order: 6, conflicts: [] },
+  { id: "p8", name: "PatchTables_EnemySpawnMultiplier_LegendaryMode.txt", type: "txt", folder: "PatchTables", category: "Balance", enabled: true, order: 7, conflicts: [] },
+  { id: "p9", name: "Visual_WeaponSkinPack_InfernoAndFrost_Set.txt", type: "txt", folder: "Visual", category: "Visual", enabled: false, order: 8, conflicts: [] },
+  { id: "p10", name: "Camera_FirstPerson_Mod_ExpFix_Arbalest.dll", type: "dll", folder: "camera", category: "Camera", enabled: false, order: 9, conflicts: [] },
+  { id: "p11", name: "PatchKeys_GamepadCustomLayout_DualShock.txt", type: "txt", folder: "PatchKeys", category: "Input", enabled: true, order: 10, conflicts: [] },
+  { id: "p12", name: "PatchTables_MissionPack_LostArkside_Expansion.txt", type: "txt", folder: "PatchTables", category: "Missions", enabled: true, order: 11, conflicts: [] },
 ];
 
 let PROFILES = [
   { id: "p1", name: "core+lostmp", timestamp: Date.now() - 86400000, mods: PLUGINS.filter((m) => m.enabled).map((m) => ({ ...m })) },
   { id: "p2", name: "vanilla+skins", timestamp: Date.now() - 2 * 86400000, mods: [{ ...PLUGINS[0], enabled: true }, { ...PLUGINS[5], enabled: true }] },
+  { id: "p3", name: "legendary-survival", timestamp: Date.now() - 3 * 86400000, mods: PLUGINS.slice(0, 9).map((m) => ({ ...m })) },
 ];
 
 let LOADED_PROFILE = (PROFILES[0] && PROFILES[0].name) || "—";

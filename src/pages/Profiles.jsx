@@ -52,7 +52,7 @@ export default function Profiles() {
           ))}
           {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Name it below and press Save.</p>}
         </div>
-        <input className="mmlin" maxLength={32} style={{ marginTop: 14, width: "100%", height: 34, padding: "0 12px", lineHeight: "34px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="Profile name" />
+        <input className="mmlin" maxLength={32} style={{ marginTop: 12, width: "100%", height: 30, padding: "0 10px", fontSize: 15, lineHeight: "30px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="New profile name" />
         <DualAction items={[
           { label: "Save", onClick: save },
           { label: "Load", onClick: loadP },
@@ -70,18 +70,19 @@ export default function Profiles() {
                 return (
                 <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "48px minmax(0,1fr) auto auto auto" }}>
                   <input
+                    key={`${m.id}-${i}`}
                     className="ordin"
                     type="number"
                     min={1}
-                    max={(selP.mods?.length || 1)}
-                    value={i + 1}
+                    defaultValue={i + 1}
                     onClick={(e) => e.stopPropagation()}
-                    onChange={(e) => {
+                    onBlur={(e) => {
                       const v = parseInt(e.target.value, 10);
                       if (!isNaN(v) && v >= 1 && v <= (selP.mods?.length || 0) && v - 1 !== i) {
                         moveMod(i, v - 1);
                       }
                     }}
+                    onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                   />
                   <div style={{ minWidth: 0, overflow: "hidden" }}>
                     <ScrollText><b>{m.name}</b></ScrollText>
