@@ -42,7 +42,7 @@ export default function Plugins() {
           {plugins.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No plugins loaded. Drop DLLs and txt patch files into your plugin folders, then refresh.</p>}
         </div>
       </Panel>
-      <Panel style={{ left: 1400, top: 130, width: 480, height: 830, padding: "10px 18px" }} title="Plugin Detail">
+      <Panel style={{ left: 1400, top: 130, width: 380, height: 830, padding: "10px 18px" }} title="Plugin Detail">
         {selP ? (
           <div style={{ marginTop: 8 }}>
             <p className="cfn" style={{ width: "26ch" }}><ScrollText><b>{selP.name}</b></ScrollText></p>
