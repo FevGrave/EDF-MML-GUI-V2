@@ -4,6 +4,7 @@ import Panel from "@/components/mml/Panel";
 import Pill from "@/components/mml/Pill";
 import Toggle from "@/components/mml/Toggle";
 import DualAction from "@/components/mml/DualAction";
+import ScrollText from "@/components/mml/ScrollText";
 
 export default function Profiles() {
   const [profiles, setProfiles] = useState([]);
@@ -67,9 +68,25 @@ export default function Profiles() {
               {selP.mods?.map((m, i) => {
                 const last = (selP.mods?.length || 0) - 1;
                 return (
-                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "36px 1fr auto auto auto" }}>
-                  <span className="ord">{i + 1}</span>
-                  <div><b>{m.name}</b><span className="catsub">{m.category}</span></div>
+                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "48px minmax(0,1fr) auto auto auto" }}>
+                  <input
+                    className="ordin"
+                    type="number"
+                    min={1}
+                    max={(selP.mods?.length || 1)}
+                    value={i + 1}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value, 10);
+                      if (!isNaN(v) && v >= 1 && v <= (selP.mods?.length || 0) && v - 1 !== i) {
+                        moveMod(i, v - 1);
+                      }
+                    }}
+                  />
+                  <div style={{ minWidth: 0, overflow: "hidden" }}>
+                    <ScrollText><b>{m.name}</b></ScrollText>
+                    <span className="catsub">{m.category}</span>
+                  </div>
                   <div className="ordbtns">
                     <button onClick={(e) => { e.stopPropagation(); moveMod(i, i - 1); }} disabled={i === 0} style={i === 0 ? { opacity: .3, cursor: "default" } : undefined}>▲</button>
                     <button onClick={(e) => { e.stopPropagation(); moveMod(i, i + 1); }} disabled={i === last} style={i === last ? { opacity: .3, cursor: "default" } : undefined}>▼</button>

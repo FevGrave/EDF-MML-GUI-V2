@@ -266,6 +266,20 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .folderhd{margin:10px 0 2px;padding:4px 12px;background:rgba(0,0,0,.4);border-left:4px solid var(--focus);font:700 15px var(--mono);letter-spacing:.12em;color:var(--focus2);text-transform:uppercase}
 .unbtn{width:30px;height:30px;background:rgba(255,106,90,.18);color:var(--bad);border:2px solid var(--bad);cursor:pointer;font:700 15px var(--font);padding:0;line-height:1;display:flex;align-items:center;justify-content:center}
 .unbtn:hover{background:var(--bad);color:#1a0a08}
+.ordin{width:36px;background:rgba(0,0,0,.55);color:var(--focus);border:2px solid var(--frame2);font:600 18px var(--mono);text-align:center;padding:0 2px;outline:0}
+.ordin:focus{border-color:var(--focus);background:rgba(255,140,40,.18)}
+.ordin::-webkit-outer-spin-button,.ordin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ordin{-moz-appearance:textfield}
+.mcd-scroll{display:block;max-width:100%;overflow:hidden;white-space:nowrap}
+.mcd-scroll-inner{display:inline-block;white-space:nowrap;will-change:transform}
+.mcd-scroll .mcd-copy{display:inline-block}
+.mcd-scroll.anim .mcd-scroll-inner{animation:mcdScroll calc(var(--mcd-dur,8) * 1s) linear infinite}
+@keyframes mcdScroll{
+  0%{transform:translateX(0)}
+  18%{transform:translateX(0)}
+  82%{transform:translateX(-50%)}
+  100%{transform:translateX(-50%)}
+}
 
 /* toggle switch */
 .sw{width:64px;height:30px;border:3px solid var(--frame);background:rgba(0,0,0,.7);position:relative;cursor:pointer;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6);flex:none}
