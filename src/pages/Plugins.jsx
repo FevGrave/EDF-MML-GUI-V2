@@ -54,15 +54,6 @@ export default function Plugins() {
             ) : (
               <div className="cfitem"><i className="dm" /> <span>No conflicts detected.</span></div>
             )}
-            <div className="actrow" style={{ marginTop: 16 }}>
-              <div className="mb big action" style={{ width: 150 }} onClick={() => toggle(selP.id, !selP.enabled)}>
-                <i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">{selP.enabled ? "Disable" : "Enable"}</span>
-              </div>
-              <div className="mb big action" style={{ width: 150 }} onClick={() => uninstall(selP.id)}>
-                <i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Uninstall</span>
-              </div>
-            </div>
-            <p className="cfdesc" style={{ marginTop: 14 }}>Uninstalling unloads the plugin from the build and removes its entry. The source file stays on disk in <b>{selP.folder}</b>.</p>
           </div>
         ) : <p className="cfdesc" style={{ marginTop: 8 }}>Select a plugin to inspect it.</p>}
       </Panel>
