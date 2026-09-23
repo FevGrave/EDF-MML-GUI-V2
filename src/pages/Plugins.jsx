@@ -3,6 +3,7 @@ import { bridge } from "@/lib/mmlBridge";
 import Panel from "@/components/mml/Panel";
 import Toggle from "@/components/mml/Toggle";
 import Pill from "@/components/mml/Pill";
+import ScrollText from "@/components/mml/ScrollText";
 
 const TYPE_BADGE = { dll: "DLL", txt: "TXT" };
 
@@ -30,7 +31,7 @@ export default function Plugins() {
               {plugins.filter((p) => p.folder === f).map((p) => (
                 <div key={p.id} className={`modrow ${sel === p.id ? "sel" : ""}`} onClick={() => setSel(p.id)}>
                   <span className="ord">{TYPE_BADGE[p.type] || p.type}</span>
-                  <div><b>{p.name}</b><span className="catsub">{p.category}</span></div>
+                  <div style={{ minWidth: 0, overflow: "hidden" }}><ScrollText><b>{p.name}</b></ScrollText><span className="catsub">{p.category}</span></div>
                   <span className={`confbadge ${p.conflicts?.length ? "bad" : ""}`}>{p.conflicts?.length ? `${p.conflicts.length} conflict${p.conflicts.length > 1 ? "s" : ""}` : "OK"}</span>
                   <Toggle on={p.enabled} onClick={(e) => { e.stopPropagation(); toggle(p.id, !p.enabled); }} />
                   <button className="unbtn" title="Uninstall" onClick={(e) => { e.stopPropagation(); uninstall(p.id); }}>✕</button>
@@ -41,10 +42,10 @@ export default function Plugins() {
           {plugins.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No plugins loaded. Drop DLLs and txt patch files into your plugin folders, then refresh.</p>}
         </div>
       </Panel>
-      <Panel style={{ left: 1400, top: 130, width: 390, height: 830, padding: "10px 18px" }} title="Plugin Detail">
+      <Panel style={{ left: 1400, top: 130, width: 480, height: 830, padding: "10px 18px" }} title="Plugin Detail">
         {selP ? (
           <div style={{ marginTop: 8 }}>
-            <p className="cfn">{selP.name}</p>
+            <p className="cfn" style={{ width: "37ch" }}><ScrollText><b>{selP.name}</b></ScrollText></p>
             <div className="cfitem"><i className="dm" /> <span>Type: <b>{selP.type.toUpperCase()}</b> patch</span></div>
             <div className="cfitem"><i className="dm" /> <span>Folder: {selP.folder}</span></div>
             <div className="cfitem"><i className="dm" /> <span>Category: {selP.category}</span></div>
