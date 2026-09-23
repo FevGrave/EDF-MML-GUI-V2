@@ -165,7 +165,7 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 
 /* big action buttons */
 .mb.big{width:330px;height:54px;cursor:pointer}
-.mb.big .bev{width:150px}
+.mb.big .bev{left:0;right:0;width:auto}
 .mb.big .acc{left:-18px;width:16px}
 .mb.big .acc.r{left:auto;right:-18px;transform:scaleX(-1)}
 .mb.big .acc::before{width:7px}
