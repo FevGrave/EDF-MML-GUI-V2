@@ -20,8 +20,8 @@ export default function Profiles() {
 
   return (
     <>
-      <Panel style={{ left: 620, top: 130, width: 560, height: 830, padding: "10px 20px" }} title="Profiles" right={<Pill className="w">{profiles.length} saved</Pill>}>
-        <div className="scroller" style={{ height: 560, marginTop: 8 }}>
+      <Panel style={{ left: 620, top: 130, width: 560, height: 830, padding: "10px 20px", display: "flex", flexDirection: "column" }} title="Profiles" right={<Pill className="w">{profiles.length} saved</Pill>}>
+        <div className="scroller" style={{ flex: 1, minHeight: 0, marginTop: 8 }}>
           {profiles.map((p) => (
             <div key={p.id} className={`modrow ${sel === p.id ? "sel" : ""}`} onClick={() => setSel(p.id)}>
               <span className="ord">◈</span>
@@ -37,12 +37,12 @@ export default function Profiles() {
           <div className="mb big action" style={{ width: 140 }} onClick={save}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Save</span></div>
         </div>
       </Panel>
-      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px" }} title="Profile Detail">
+      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Profile Detail">
         {selP ? (
-          <div style={{ marginTop: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", flex: 1, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
             <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>{new Date(selP.timestamp).toLocaleString()}</p>
-            <div className="scroller" style={{ height: 520 }}>
+            <div className="scroller" style={{ flex: 1, minHeight: 0 }}>
               {selP.mods?.map((m, i) => (
                 <div key={i} className="modrow">
                   <span className="ord">{i + 1}</span>
