@@ -61,7 +61,7 @@ export default function Profiles() {
 
       <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
         {selP ? (
-          <div style={{ display: "flex", flexDirection: "column", flex: 1, marginTop: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
             <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>
               {new Date(selP.timestamp).toLocaleString()}
