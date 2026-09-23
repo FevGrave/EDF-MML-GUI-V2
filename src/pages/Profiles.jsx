@@ -52,7 +52,7 @@ export default function Profiles() {
           ))}
           {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Name it below and press Save.</p>}
         </div>
-        <input className="mmlin" maxLength={32} style={{ marginTop: 12, width: "100%", height: 30, padding: "0 10px", fontSize: 15, lineHeight: "30px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="New profile name" />
+        <input className="mmlin" maxLength={32} style={{ marginTop: 10, width: "100%", height: 26, padding: "0 10px", fontSize: 14, lineHeight: "26px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="New profile name" />
         <DualAction items={[
           { label: "Save", onClick: save },
           { label: "Load", onClick: loadP },
@@ -63,29 +63,36 @@ export default function Profiles() {
         {selP ? (
           <div style={{ display: "flex", flexDirection: "column", flex: 1, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
-            <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>{new Date(selP.timestamp).toLocaleString()}</p>
+            <p className="catsub" style={{ display: "block", margin: "0 0 8px" }}>
+              {new Date(selP.timestamp).toLocaleString()}
+              {msg && <span style={{ color: "var(--ok)", marginLeft: 12 }}>{msg}</span>}
+            </p>
             <div className="scroller" style={{ flex: 1, minHeight: 0, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
               {selP.mods?.map((m, i) => {
                 const last = (selP.mods?.length || 0) - 1;
                 return (
-                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "48px minmax(0,1fr) auto auto auto" }}>
+                <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "40px minmax(0,1fr) auto auto auto" }}>
                   <input
                     key={`${m.id}-${i}`}
                     className="ordin"
                     type="number"
                     min={1}
+                    max={(selP.mods?.length || 1)}
                     defaultValue={i + 1}
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => {
                       const v = parseInt(e.target.value, 10);
-                      if (!isNaN(v) && v >= 1 && v <= (selP.mods?.length || 0) && v - 1 !== i) {
-                        moveMod(i, v - 1);
+                      const max = selP.mods?.length || 1;
+                      if (!isNaN(v)) {
+                        const clamped = Math.max(1, Math.min(max, v));
+                        if (clamped - 1 !== i) { moveMod(i, clamped - 1); return; }
                       }
+                      e.target.value = String(i + 1);
                     }}
                     onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                   />
                   <div style={{ minWidth: 0, overflow: "hidden" }}>
-                    <ScrollText><b>{m.name}</b></ScrollText>
+                    <ScrollText><b>{m.name}Mod_config_data.json{m.enabled ? "" : "disabled"}</b></ScrollText>
                     <span className="catsub">{m.category}</span>
                   </div>
                   <div className="ordbtns">
@@ -104,7 +111,6 @@ export default function Profiles() {
             ]} />
           </div>
         ) : <p className="cfdesc" style={{ marginTop: 8 }}>Select or save a profile.</p>}
-        {msg && <p className="cfdesc" style={{ marginTop: 12, color: "var(--ok)" }}>{msg}</p>}
       </Panel>
     </>
   );

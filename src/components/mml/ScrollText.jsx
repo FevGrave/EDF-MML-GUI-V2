@@ -32,8 +32,8 @@ export default function ScrollText({ children, className = "", style }) {
   return (
     <span ref={wrapRef} className={`mcd-scroll ${overflow ? "anim" : ""}`} style={{ ...style, "--mcd-dur": dur }}>
       <span className="mcd-scroll-inner">
-        <span ref={firstRef} className="mcd-copy">{children}</span>
-        {overflow ? <span className="mcd-copy" aria-hidden="true">{children}</span> : null}
+        <span ref={firstRef} className="mcd-copy">{children}{"    "}</span>
+        {overflow ? <span className="mcd-copy" aria-hidden="true">{children}{"    "}</span> : null}
       </span>
     </span>
   );
