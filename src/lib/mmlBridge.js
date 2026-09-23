@@ -33,6 +33,26 @@ let PROFILES = [
 
 let LOADED_PROFILE = (PROFILES[0] && PROFILES[0].name) || "—";
 
+let DEFAULT_GAMES = [
+  { id: "edf62", label: "EDF 6.2", working_dir: "", platform: "steam", installed: false },
+  { id: "edf6", label: "EDF 6", working_dir: "F:\\Games\\EARTH DEFENSE FORCE 6", platform: "steam", installed: true },
+  { id: "edf5", label: "EDF 5", working_dir: "", platform: null, installed: false },
+  { id: "edf41", label: "EDF 4.1", working_dir: "", platform: null, installed: false },
+];
+function loadGames() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("mml-games"));
+    if (Array.isArray(saved)) {
+      return DEFAULT_GAMES.map((g) => {
+        const s = saved.find((x) => x.id === g.id);
+        return s ? { ...g, ...s } : clone(g);
+      });
+    }
+  } catch (e) {}
+  return clone(DEFAULT_GAMES);
+}
+function saveGames(games) { localStorage.setItem("mml-games", JSON.stringify(games)); }
+
 // Real ConfigBuildAll.py pipeline stages. NI Test and Installer each run 9
 // stages — a different 9. `match` is the exact substring ConfigBuildAll.py
 // prints to AA-Log.txt for that stage; the Build page lights its pill when the
@@ -169,6 +189,22 @@ export const bridge = {
     if (toIndex < 0 || toIndex >= arr.length) return;
     const [item] = arr.splice(fromIndex, 1);
     arr.splice(toIndex, 0, item);
+  },
+  async getGames() {
+    if (API()?.get_games) return API().get_games();
+    return loadGames();
+  },
+  async setGameDir(id, dir) {
+    if (API()?.set_game_dir) return API().set_game_dir(id, dir);
+    const games = loadGames();
+    const g = games.find((x) => x.id === id);
+    if (g) { g.working_dir = dir; saveGames(games); }
+  },
+  async setGamePlatform(id, platform) {
+    if (API()?.set_game_platform) return API().set_game_platform(id, platform);
+    const games = loadGames();
+    const g = games.find((x) => x.id === id);
+    if (g) { g.platform = platform; saveGames(games); }
   },
   async getBuildPlan(type) {
     if (API()?.get_build_plan) return API().get_build_plan(type);

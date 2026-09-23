@@ -7,6 +7,7 @@ import Pill from "@/components/mml/Pill";
 import Chip from "@/components/mml/Chip";
 import Badge from "@/components/mml/Badge";
 import Gauge from "@/components/mml/Gauge";
+import { useBgArt } from "@/lib/mmlBgArt";
 
 const cls = (s) => (s === "ok" ? "" : s === "warn" ? "w" : s === "error" ? "bad" : "mute");
 const word = (s, a, b, c, d) => (s === "ok" ? a : s === "warn" ? b : s === "error" ? c : d);
@@ -23,6 +24,7 @@ function PfRow({ dot, name, cat, note, children }) {
 
 export default function Home() {
   const [r, setR] = useState(null);
+  const [bgArt] = useBgArt();
   useEffect(() => { bridge.getPreflight().then(setR); }, []);
 
   if (!r) return <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: 20 }} title="Preflight"><p className="cfdesc">Loading preflight…</p></Panel>;
@@ -34,7 +36,7 @@ export default function Home() {
 
   return (
     <>
-      <ArtWindow />
+      {bgArt && <ArtWindow />}
       <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: "10px 20px" }} title="Preflight" right={<Pill className={r.warning_count ? "w" : ""}>{r.warning_count ? `${r.warning_count} warning${r.warning_count > 1 ? "s" : ""}` : "all clear"}</Pill>}>
         <div className={`bigstat ${hk.state === "ok" ? "ok" : hk.state === "error" ? "bad" : ""}`}>
           <i className={`dm ${cls(hk.state)}`} />

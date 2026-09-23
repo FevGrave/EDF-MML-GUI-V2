@@ -4,7 +4,7 @@ export const MENU = [
   { label: "Build", path: "/build", help: "Build the merged tables. Choose the No Install test or the Installer." },
   { label: "Profiles", path: "/profiles", help: "Save, load and export mod profiles." },
   { label: "Save Sync", path: "/save-sync", help: "Send weapon, mission and text maps to the save editor." },
-  { label: "Settings", path: "/settings", help: "Paths, language, palette, background art and NI mode." },
+  { label: "Settings", path: "/settings", help: "Palette (with full custom editor), background art and game working directories." },
   { label: "Links and Credits", path: "/links", help: "Documentation, mod hosting sites, socials and credits." },
   { label: "Play Game", path: "/play", help: "Launch the game. Needs a finished build.", off: true },
 ];
