@@ -45,7 +45,7 @@ export default function Plugins() {
       <Panel style={{ left: 1400, top: 130, width: 480, height: 830, padding: "10px 18px" }} title="Plugin Detail">
         {selP ? (
           <div style={{ marginTop: 8 }}>
-            <p className="cfn" style={{ width: "30ch" }}><ScrollText><b>{selP.name}</b></ScrollText></p>
+            <p className="cfn" style={{ width: "26ch" }}><ScrollText><b>{selP.name}</b></ScrollText></p>
             <div className="cfitem"><i className="dm" /> <span>Type: <b>{selP.type.toUpperCase()}</b> patch</span></div>
             <div className="cfitem"><i className="dm" /> <span>Folder: {selP.folder}</span></div>
             <div className="cfitem"><i className="dm" /> <span>Category: {selP.category}</span></div>
