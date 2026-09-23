@@ -62,8 +62,8 @@ export default function Build() {
           </select>
         </div>
         <p className="cfdesc" style={{ marginTop: 14 }}>Combines enabled plugins into raw game tables, bakes the merged files, and packages an installer — or drops a NI test build into the NI folder.</p>
-        <div style={{ marginTop: 14 }}>
-          <div className="mb big action" onClick={() => !busy && build()}><i className="body" /><i className="acc" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Build Tables</span></div>
+        <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
+          <div className="mb big action" onClick={() => !busy && build()}><i className="body" /><i className="acc" /><i className="acc r" /><i className="bev" /><i className="u1" /><i className="u2" /><span className="t">Build Tables</span></div>
         </div>
         <EdfProgress value={pct} active={busy} />
         <div className="edfsteps">
