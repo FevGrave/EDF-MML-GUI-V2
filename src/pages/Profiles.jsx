@@ -59,7 +59,7 @@ export default function Profiles() {
         ]} />
       </Panel>
 
-      <Panel style={{ left: 1200, top: 130, width: 590, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
+      <Panel style={{ left: 1200, top: 130, width: 680, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
         {selP ? (
           <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
@@ -92,7 +92,7 @@ export default function Profiles() {
                     onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                   />
                   <div style={{ minWidth: 0, overflow: "hidden" }}>
-                    <ScrollText><b>{m.name}Mod_config_data.json{m.enabled ? "" : "disabled"}</b></ScrollText>
+                    <ScrollText><b style={{ fontSize: 18 }}>{m.name}Mod_config_data.json{m.enabled ? "" : "disabled"}</b></ScrollText>
                     <span className="catsub">{m.category}</span>
                   </div>
                   <div className="ordbtns">
