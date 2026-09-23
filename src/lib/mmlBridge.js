@@ -24,10 +24,13 @@ let PROFILES = [
   { id: "p2", name: "vanilla+skins", timestamp: Date.now() - 2 * 86400000, mods: [{ ...PLUGINS[0], enabled: true }, { ...PLUGINS[5], enabled: true }] },
 ];
 
+let LOADED_PROFILE = (PROFILES[0] && PROFILES[0].name) || "—";
+
 export const bridge = {
   async getPreflight() {
     if (API()?.get_preflight) return API().get_preflight();
     return {
+      loaded_profile: LOADED_PROFILE,
       warning_count: 1,
       checks: [
         { id: "hakken_build", state: "error", detail: "No build yet. Run Build NI Test or Build Installer from the Build menu." },
@@ -70,7 +73,7 @@ export const bridge = {
   async loadProfile(id) {
     if (API()?.load_profile) return API().load_profile(id);
     const p = PROFILES.find((x) => x.id === id);
-    if (p) p.mods.forEach((pm) => { const m = PLUGINS.find((x) => x.name === pm.name); if (m) { m.enabled = pm.enabled; m.order = pm.order; } });
+    if (p) { LOADED_PROFILE = p.name; p.mods.forEach((pm) => { const m = PLUGINS.find((x) => x.name === pm.name); if (m) { m.enabled = pm.enabled; m.order = pm.order; } }); }
   },
   async exportProfile(id) {
     if (API()?.export_profile) return API().export_profile(id);
