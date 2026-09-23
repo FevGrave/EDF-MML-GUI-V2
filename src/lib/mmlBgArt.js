@@ -1,10 +1,15 @@
 import { useState, useEffect } from "react";
 
 const KEY = "mml-bg-art";
-// Persisted toggle for whether the character artwork window renders on Home.
-// Different routes, so each reads localStorage on mount — no live sync needed.
+const MODES = ["all", "modded", "mml", "none"];
+
+// Background art display mode, persisted locally.
+// all = MML art + modded images; modded = only custom images; mml = only built-in art; none = hide the window.
 export function useBgArt() {
-  const [on, setOn] = useState(() => localStorage.getItem(KEY) !== "0");
-  useEffect(() => { localStorage.setItem(KEY, on ? "1" : "0"); }, [on]);
-  return [on, setOn];
+  const [mode, setMode] = useState(() => {
+    const v = localStorage.getItem(KEY);
+    return MODES.includes(v) ? v : "all";
+  });
+  useEffect(() => { localStorage.setItem(KEY, mode); }, [mode]);
+  return [mode, setMode];
 }

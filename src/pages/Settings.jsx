@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { bridge } from "@/lib/mmlBridge";
 import Panel from "@/components/mml/Panel";
-import Toggle from "@/components/mml/Toggle";
 import Pill from "@/components/mml/Pill";
+import ColorField from "@/components/mml/ColorField";
 import { useMmlPalette, CUSTOM_FIELDS } from "@/lib/mmlPalette";
 import { useBgArt } from "@/lib/mmlBgArt";
 
 const PALETTES = [["khaki", "#c9b98a"], ["purple", "#5b4056"], ["green", "#2fb070"]];
+const ART_MODES = [["all", "All"], ["modded", "Modded"], ["mml", "MML"], ["none", "None"]];
 const PLATS = ["steam", "epic"];
-const hexValid = (h) => /^#[0-9a-fA-F]{6}$/.test(h);
 
 export default function Settings() {
   const { palette, setPalette, custom, setCustom } = useMmlPalette();
@@ -30,41 +30,34 @@ export default function Settings() {
       <div style={{ display: "flex", gap: 28, marginTop: 14 }}>
         {/* left: palette + background art */}
         <div style={{ width: 480, flex: "none" }}>
-          <div className="optrow"><span>Palette</span>
-            <div className="seg">
-              {PALETTES.map(([k, c]) => (
-                <button key={k} className={`palbtn ${palette === k ? "on" : ""}`} onClick={() => setPalette(k)}>
-                  <i style={{ background: c, width: 12, height: 12, display: "inline-block", marginRight: 8, border: "1px solid #ffffff66" }} />{k}
-                </button>
-              ))}
-              <button className={`palbtn ${palette === "custom" ? "on" : ""}`} onClick={() => setPalette("custom")}>
-                <i style={{ background: "linear-gradient(135deg,#ff6a5a,#5ad0ff,#5dff9a)", width: 12, height: 12, display: "inline-block", marginRight: 8, border: "1px solid #ffffff66" }} />custom
+          <div style={{ font: "600 24px var(--font)", letterSpacing: ".08em", color: "#fff", marginBottom: 8 }}>Palette</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 4 }}>
+            {PALETTES.map(([k, c]) => (
+              <button key={k} className={`palbtn ${palette === k ? "on" : ""}`} onClick={() => setPalette(k)}>
+                <i style={{ background: c, width: 14, height: 14, display: "inline-block", marginRight: 10, border: "1px solid #ffffff66" }} />{k}
               </button>
-            </div>
+            ))}
+            <button className={`palbtn ${palette === "custom" ? "on" : ""}`} onClick={() => setPalette("custom")}>
+              <i style={{ background: "linear-gradient(135deg,#ff6a5a,#5ad0ff,#5dff9a)", width: 14, height: 14, display: "inline-block", marginRight: 10, border: "1px solid #ffffff66" }} />custom
+            </button>
           </div>
 
           {palette === "custom" && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 18px", marginTop: 10 }}>
-              {CUSTOM_FIELDS.map(({ label, var: v, def }) => {
-                const val = custom[v] && hexValid(custom[v]) ? custom[v] : def;
-                return (
-                  <div key={v} className="cfitem" style={{ height: 40, gap: 8 }}>
-                    <input type="color" value={val} onChange={(e) => setCustom(v, e.target.value)}
-                      style={{ width: 26, height: 26, padding: 0, border: "2px solid var(--frame2)", background: "transparent", cursor: "pointer" }} />
-                    <span style={{ flex: 1, fontSize: 17 }}>{label}</span>
-                    <input className="mmlin" style={{ width: 86, height: 28, fontSize: 14, padding: "0 6px" }} maxLength={7}
-                      value={val.toUpperCase()} onChange={(e) => {
-                        const h = e.target.value;
-                        if (/^#[0-9a-fA-F]{0,6}$/.test(h)) setCustom(v, h);
-                      }} />
-                  </div>
-                );
-              })}
+              {CUSTOM_FIELDS.map(({ label, var: v, def }) => (
+                <ColorField key={v} label={label} value={custom[v]} def={def} onChange={(hex) => setCustom(v, hex)} />
+              ))}
             </div>
           )}
 
-          <div className="optrow"><span>Background art</span><Toggle on={art} onClick={() => setArt((v) => !v)} /></div>
-          <p className="cfdesc" style={{ marginTop: 16 }}>Palette switches the HUD colour scheme — pick a preset or tune every colour with the Custom editor. Background art shows the character artwork on the Home screen. Changes apply instantly and are remembered on this machine.</p>
+          <div className="optrow" style={{ marginTop: 8 }}><span>Background art</span>
+            <div className="seg">
+              {ART_MODES.map(([m, lbl]) => (
+                <button key={m} className={`palbtn ${art === m ? "on" : ""}`} onClick={() => setArt(m)}>{lbl}</button>
+              ))}
+            </div>
+          </div>
+          <p className="cfdesc" style={{ marginTop: 16 }}>Palette switches the HUD colour scheme — pick a preset or tune every colour with the Custom editor. Background art chooses what shows on the Home screen: all art, only custom modded images, only built-in art, or nothing.</p>
         </div>
 
         {/* right: game working directories */}

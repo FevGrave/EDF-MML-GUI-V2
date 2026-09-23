@@ -36,7 +36,7 @@ export default function Home() {
 
   return (
     <>
-      {bgArt && <ArtWindow />}
+      {bgArt !== "none" && <ArtWindow mode={bgArt} />}
       <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: "10px 20px" }} title="Preflight" right={<Pill className={r.warning_count ? "w" : ""}>{r.warning_count ? `${r.warning_count} warning${r.warning_count > 1 ? "s" : ""}` : "all clear"}</Pill>}>
         <div className={`bigstat ${hk.state === "ok" ? "ok" : hk.state === "error" ? "bad" : ""}`}>
           <i className={`dm ${cls(hk.state)}`} />

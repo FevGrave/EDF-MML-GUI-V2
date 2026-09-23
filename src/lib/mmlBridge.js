@@ -194,6 +194,11 @@ export const bridge = {
     if (API()?.get_games) return API().get_games();
     return loadGames();
   },
+  async getModdedArt() {
+    if (API()?.get_modded_art) return API().get_modded_art();
+    // browser preview: no modded art folder; users add images via the ArtWindow +
+    return [];
+  },
   async setGameDir(id, dir) {
     if (API()?.set_game_dir) return API().set_game_dir(id, dir);
     const games = loadGames();

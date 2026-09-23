@@ -324,4 +324,6 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 @keyframes dotPulse{0%,100%{opacity:1}50%{opacity:.4}}
 .savebar{display:flex;gap:12px;align-items:center;margin-top:14px}
 .actrow{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
-.palbtn{cursor:pointer}
+.palbtn{cursor:pointer;background:rgba(0,0,0,.5);color:#fff;border:2px solid var(--frame2);font:600 16px var(--font);letter-spacing:.1em;padding:10px 12px;text-transform:uppercase;display:flex;align-items:center;justify-content:center}
+.palbtn:hover{border-color:var(--focus2);color:var(--focus2)}
+.palbtn.on{background:rgba(255,140,40,.3);border-color:var(--focus);color:var(--focus2)}
