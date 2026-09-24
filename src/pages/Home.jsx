@@ -25,7 +25,14 @@ function PfRow({ dot, name, cat, note, children }) {
 export default function Home() {
   const [r, setR] = useState(null);
   const [bg] = useBgArt();
+  const [games, setGames] = useState([]);
+  const [active, setActive] = useState(null);
   useEffect(() => { bridge.getPreflight().then(setR); }, []);
+  useEffect(() => {
+    bridge.getGames().then(setGames);
+    bridge.getActiveGame().then(setActive);
+  }, []);
+  const pickGame = (id) => { bridge.setActiveGame(id); setActive(id); };
 
   if (!r) return <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: 20 }} title="Preflight"><p className="cfdesc">Loading preflight…</p></Panel>;
 
@@ -50,6 +57,12 @@ export default function Home() {
         <div className="st">
           <Gauge label="Weapons" value={wpct} />
           <div className="gv"><b>{w && w.used != null && w.capacity != null ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : (w && w.capacity != null ? `— / ${w.capacity.toLocaleString()}` : "—")}</b><span>slots used</span></div>
+          <div className="r"><span>Active game</span>
+            <select className="mmlsel" style={{ height: 28, fontSize: 15, padding: "0 6px" }} value={active || ""} onChange={(e) => pickGame(e.target.value)}>
+              {games.length === 0 && <option value="">—</option>}
+              {games.map((g) => <option key={g.id} value={g.id}>{g.label}{g.working_dir ? "" : " · not set"}</option>)}
+            </select>
+          </div>
           <div className="r"><span>Loaded profile</span><small>{r.loaded_profile || "—"}</small></div>
           <div className="r"><span>Mode</span><small>{md ? md.ni_mode : "—"}</small></div>
         </div>

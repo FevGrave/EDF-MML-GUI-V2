@@ -14,8 +14,21 @@ export default function Settings() {
   const { palette, setPalette, custom, setCustom } = useMmlPalette();
   const [art, setArt] = useBgArt();
   const [games, setGames] = useState([]);
+  const [detecting, setDetecting] = useState(false);
 
   useEffect(() => { bridge.getGames().then(setGames); }, []);
+  const detect = async () => {
+    setDetecting(true);
+    try {
+      const found = await bridge.detectGames();
+      setGames((gs) => gs.map((g) => {
+        const d = found.find((x) => x.id === g.id);
+        if (!d) return g;
+        bridge.updateGame(g.id, { working_dir: d.working_dir, platform: d.platform, installed: true });
+        return { ...g, working_dir: d.working_dir, platform: d.platform, installed: true };
+      }));
+    } finally { setDetecting(false); }
+  };
   const setDir = (id, dir) => {
     bridge.setGameDir(id, dir);
     setGames((gs) => gs.map((g) => (g.id === id ? { ...g, working_dir: dir } : g)));
@@ -80,7 +93,11 @@ export default function Settings() {
             Game working directories
             <Pill className="w">{games.filter((g) => g.working_dir).length}/{games.length} set</Pill>
           </h4>
-          <div className="scroller" style={{ maxHeight: 660, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
+          <div style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <button className="palbtn" style={{ padding: "8px 12px" }} onClick={detect} disabled={detecting}>{detecting ? "Detecting…" : "Auto-detect (Steam)"}</button>
+            <span className="cfdesc" style={{ fontSize: 15 }}>Scans your Steam library and fills in every detected EDF install.</span>
+          </div>
+          <div className="scroller" style={{ maxHeight: 620, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
             {games.map((g) => (
               <div key={g.id} style={{ padding: "12px 14px", borderBottom: "2px solid rgba(255,255,255,.12)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>

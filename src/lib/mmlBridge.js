@@ -211,6 +211,36 @@ export const bridge = {
     const g = games.find((x) => x.id === id);
     if (g) { g.platform = platform; saveGames(games); }
   },
+  // Generic merge so auto-detect can update working_dir + platform + installed
+  // in one persisted write without separate calls.
+  async updateGame(id, patch) {
+    if (API()?.update_game) return API().update_game(id, patch);
+    const games = loadGames();
+    const g = games.find((x) => x.id === id);
+    if (g) { Object.assign(g, patch); saveGames(games); }
+  },
+  // Steam auto-detect. The real backend parses libraryfolders.vdf and matches
+  // the EDF app IDs (4.1=251110, 5=1039840, 6=1635360); the mock replays the
+  // same shape. EDF 6.2 is not (yet) on Steam, so it is never auto-detected —
+  // it stays manual in the picker.
+  async detectGames() {
+    if (API()?.detect_games) return API().detect_games();
+    await new Promise((r) => setTimeout(r, 700));
+    const base = "F:\\SteamLibrary\\steamapps\\common\\EARTH DEFENSE FORCE";
+    return [
+      { id: "edf6", working_dir: base + " 6", platform: "steam", installed: true },
+      { id: "edf5", working_dir: base + " 5", platform: "steam", installed: true },
+      { id: "edf41", working_dir: base + " 4.1", platform: "steam", installed: true },
+    ];
+  },
+  async getActiveGame() {
+    if (API()?.get_active_game) return API().get_active_game();
+    return localStorage.getItem("mml-active-game") || null;
+  },
+  async setActiveGame(id) {
+    if (API()?.set_active_game) return API().set_active_game(id);
+    localStorage.setItem("mml-active-game", id);
+  },
   async getBuildPlan(type) {
     if (API()?.get_build_plan) return API().get_build_plan(type);
     const base = [
