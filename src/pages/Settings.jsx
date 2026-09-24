@@ -9,6 +9,8 @@ import { useBgArt } from "@/lib/mmlBgArt";
 const PALETTES = [["khaki", "#c9b98a"], ["purple", "#5b4056"], ["green", "#2fb070"]];
 const ART_MODES = [["all", "All"], ["modded", "Modded"], ["mml", "MML"], ["none", "None"]];
 const PLATS = ["steam", "epic"];
+// EDF 4.1 and 5 are Steam-only — their platform selector is locked to Steam and grayed out.
+const STEAM_ONLY = ["edf41", "edf5"];
 
 export default function Settings() {
   const { palette, setPalette, custom, setCustom } = useMmlPalette();
@@ -105,10 +107,11 @@ export default function Settings() {
                   <span className={`pill ${g.installed ? "" : "mute"}`} style={{ fontSize: 13 }}>{g.installed ? "Installed" : "Not installed"}</span>
                 </div>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <select className="mmlsel" style={{ height: 30, fontSize: 14, padding: "0 8px", flex: "none" }}
-                    value={g.platform || ""} onChange={(e) => setPlat(g.id, e.target.value || null)}>
-                    <option value="">platform —</option>
-                    {PLATS.map((p) => <option key={p} value={p}>{p}</option>)}
+                  <select className="mmlsel" style={{ height: 30, fontSize: 14, padding: "0 8px", flex: "none", opacity: STEAM_ONLY.includes(g.id) ? 0.55 : 1 }}
+                    value={STEAM_ONLY.includes(g.id) ? "steam" : (g.platform || "")} disabled={STEAM_ONLY.includes(g.id)}
+                    onChange={(e) => setPlat(g.id, e.target.value || null)}>
+                    {STEAM_ONLY.includes(g.id) ? <option value="steam">steam</option> : <option value="">platform —</option>}
+                    {!STEAM_ONLY.includes(g.id) && PLATS.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                   <input className="mmlin" style={{ height: 30, fontSize: 14, padding: "0 10px" }} maxLength={260}
                     placeholder="Game working directory…" value={g.working_dir || ""} onChange={(e) => setDir(g.id, e.target.value)} />
