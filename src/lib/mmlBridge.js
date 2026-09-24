@@ -144,6 +144,25 @@ export const bridge = {
     if (API()?.uninstall_plugin) return API().uninstall_plugin(id);
     PLUGINS = PLUGINS.filter((x) => x.id !== id);
   },
+  // Returns the on-disk file contents for a plugin. For DLL plugins this is the
+  // companion .ini config; for txt patch files it's the patch source itself.
+  async getPluginFile(id) {
+    if (API()?.get_plugin_file) return API().get_plugin_file(id);
+    const p = PLUGINS.find((x) => x.id === id);
+    if (!p) return null;
+    if (p.type === "dll") {
+      return {
+        name: p.name.replace(/\.[^.]+$/, "") + ".ini",
+        ext: "ini",
+        content: `; ${p.name} configuration\n[General]\nEnabled=${p.enabled ? 1 : 0}\nLogLevel=0\nVerbose=0\n\n[Hooks]\nRender=1\nInput=1\nCamera=1\nFPS=1\n\n[Patch]\nSafeMode=0\n`,
+      };
+    }
+    return {
+      name: p.name,
+      ext: "txt",
+      content: `# ${p.name}\n# Category: ${p.category}\n# Folder: ${p.folder}\n\n[WeaponTable:Ranger]\nDamageMultiplier=1.15\nFireRate=1.05\nReloadSpeed=1.10\n\n[TextMap:Weapons]\n; overrides display strings\n`,
+    };
+  },
   async getProfiles() {
     if (API()?.get_profiles) return API().get_profiles();
     return clone(PROFILES);
