@@ -13,6 +13,7 @@ import Plugins from '@/pages/Plugins';
 import Build from '@/pages/Build';
 import Profiles from '@/pages/Profiles';
 import Settings from '@/pages/Settings';
+import Play from '@/pages/Play';
 import Placeholder from '@/pages/Placeholder';
 
 // The packaged desktop build (Mods/MML_MergeCommand, loaded from pywebview) has
@@ -54,7 +55,7 @@ const AuthenticatedApp = () => {
         <Route path="/settings" element={<Settings />} />
         <Route path="/save-sync" element={<Placeholder title="Save Sync" />} />
         <Route path="/links" element={<Placeholder title="Links and Credits" />} />
-        <Route path="/play" element={<Placeholder title="Play Game" />} />
+        <Route path="/play" element={<Play />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

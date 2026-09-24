@@ -220,7 +220,7 @@ export const bridge = {
     if (g) { Object.assign(g, patch); saveGames(games); }
   },
   // Steam auto-detect. The real backend parses libraryfolders.vdf and matches
-  // the EDF app IDs (4.1=251110, 5=1039840, 6=1635360); the mock replays the
+  // the EDF app IDs (4.1=251110, 5=1039840, 6=2291060); the mock replays the
   // same shape. EDF 6.2 is not (yet) on Steam, so it is never auto-detected —
   // it stays manual in the picker.
   async detectGames() {
