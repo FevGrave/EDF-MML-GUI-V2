@@ -52,7 +52,7 @@ export default function Profiles() {
           ))}
           {profiles.length === 0 && <p className="cfdesc" style={{ marginTop: 10 }}>No profiles yet. Name it below and press Save.</p>}
         </div>
-        <input className="mmlin" maxLength={32} style={{ marginTop: 10, width: "100%", height: 26, padding: "0 10px", fontSize: 14, lineHeight: "26px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="New profile name" />
+        <input className="mmlin" maxLength={32} style={{ marginTop: 10, width: "100%", height: 16, padding: "0 10px", fontSize: 14, lineHeight: "26px" }} value={name} onChange={(e) => setName(e.target.value)} placeholder="New profile name" />
         <DualAction items={[
           { label: "Save", onClick: save },
           { label: "Load", onClick: loadP },
