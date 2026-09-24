@@ -25,7 +25,7 @@ export default function Plugins() {
 
   return (
     <>
-      <Panel style={{ left: 620, top: 130, width: 600, height: 830, padding: "10px 20px" }} title="Plugins/Patches" right={<Pill className="w">{plugins.filter((p) => p.enabled).length} of {plugins.length} on</Pill>}  title="Plugins/Patches">
+      <Panel style={{ left: 620, top: 130, width: 600, height: 830, padding: "10px 20px" }} title="Plugins/Patches" right={<Pill className="w">{plugins.filter((p) => p.enabled).length} of {plugins.length} on</Pill>}>
         <div className="scroller" style={{ height: 720, marginTop: 8 }}>
           {folders.map((f) => (
             <div key={f}>

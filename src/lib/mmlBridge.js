@@ -61,26 +61,26 @@ function saveGames(games) { localStorage.setItem("mml-games", JSON.stringify(gam
 // state instead of a spinner. (A "Compress Files" stage exists in source but is
 // disabled/commented out in both modes, so it is not listed.)
 const STAGES_NI = [
-  { id: "replace", label: "Data replacement", match: "Replacing data strings..." },
-  { id: "yoink", label: "Yoink configs", match: "Yoinking non-additive configs..." },
+  { id: "replace", label: "Data replacement", match: "Running data replacement..." },
+  { id: "yoink", label: "Yoink configs", match: "Yoink over non additive configs..." },
   { id: "config", label: "Build config", match: "Building config..." },
-  { id: "missions", label: "Mission packs", match: "EDIT what mission pack this player wants...", waitForInput: true },
+  { id: "missions", label: "Mission packs", match: "EDIT what mission pack this player wants in the config...", waitForInput: true },
   { id: "text", label: "Text tables", match: "Processing text tables..." },
   { id: "subs", label: "Subtitles", match: "Processing subtitles..." },
   { id: "weapons", label: "Weapon data", match: "Appending weapon data..." },
-  { id: "culldlc", label: "Cull DLC weapons", match: "Culling DLC weapon tables..." },
-  { id: "cullmod", label: "Cull modded weapons", match: "Culling modded weapon tables..." },
+  { id: "culldlc", label: "Cull DLC weapons", match: "EDIT DLC Weapon drops for matching mission packs..." },
+  { id: "cullmod", label: "Cull modded weapons", match: "EDIT MODDED Weapon drops for matching mission packs..." },
 ];
 const STAGES_INSTALLER = [
-  { id: "replace", label: "Data replacement", match: "Replacing data strings..." },
-  { id: "yoink", label: "Yoink configs", match: "Yoinking non-additive configs..." },
+  { id: "replace", label: "Data replacement", match: "Running data replacement..." },
+  { id: "yoink", label: "Yoink configs", match: "Yoink over non additive configs..." },
   { id: "config", label: "Build config", match: "Building config..." },
   { id: "text", label: "Text tables", match: "Processing text tables..." },
   { id: "subs", label: "Subtitles", match: "Processing subtitles..." },
   { id: "weapons", label: "Weapon data", match: "Appending weapon data..." },
-  { id: "sgo", label: "SGO conversion", match: "Converting to SGO via sgott.exe..." },
-  { id: "rename", label: "Rename tables", match: "Renaming converted text-table files..." },
-  { id: "move", label: "Move to Mods/", match: "Moving files into Mods/ install locations..." },
+  { id: "sgo", label: "SGO conversion", match: "Starting SGO conversion..." },
+  { id: "rename", label: "Rename tables", match: "Renaming in game text data files..." },
+  { id: "move", label: "Move to Mods/", match: "Installing SGOs to Mods folders..." },
 ];
 export function buildStages(mode) { return mode === "ni" ? STAGES_NI : STAGES_INSTALLER; }
 
