@@ -151,6 +151,56 @@ function mockBuildStatus() {
   return { running: BUILD.running, log: BUILD.log, finished: BUILD.finished, ok: BUILD.ok, waiting: BUILD.waiting };
 }
 
+// MOD_INFO mock -- mirrors the real *_Mod_config_data.json MOD_INFO list (a
+// list of dicts, not a single dict). Real keys kept verbatim: AUTHOR,
+// "MOD NAME", "DOWNLOAD FROM" (GITHUB|NEXUS, widened to add THUNDERSTORE),
+// LINK, VERSION, MOD_ID, FILE_ID, NOTES, plus the new fields this feature
+// adds: THUNDERSTORE_NAMESPACE/THUNDERSTORE_NAME and LAST_CHECKED_VERSION/
+// LAST_CHECKED_AT. One entry has LINK "" despite a populated VERSION (a real
+// case found on disk) -- code treats empty link as "can't check", not crash.
+// VERSION strings are compared by exact equality only, never semver-parsed.
+let MOD_INFO = [
+  { id: "m1", "AUTHOR": "FevGrave", "MOD NAME": "EDF_6-1 NativeRenderer", "DOWNLOAD FROM": "GITHUB", "LINK": "https://github.com/FevGrave/EDF_6-1/archive/main.zip", "VERSION": "0.4", "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+  { id: "m2", "AUTHOR": "FevGrave", "MOD NAME": "ModernCamera", "DOWNLOAD FROM": "GITHUB", "LINK": "https://github.com/FevGrave/ModernCamera", "VERSION": "0.1.0", "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+  { id: "m3", "AUTHOR": "FevGrave", "MOD NAME": "PatchKeys_KeyboardRemap", "DOWNLOAD FROM": "NEXUS", "LINK": "https://www.nexusmods.com/earthdefenseforce6/mods/42", "VERSION": "0.4", "MOD_ID": "42", "FILE_ID": "118", "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+  { id: "m4", "AUTHOR": "FevGrave", "MOD NAME": "PatchTables_ReduxOverhaul", "DOWNLOAD FROM": "NEXUS", "LINK": "https://www.nexusmods.com/earthdefenseforce6/mods/88", "VERSION": "0.2.2", "MOD_ID": "88", "FILE_ID": "240", "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+  { id: "m5", "AUTHOR": "FevGrave", "MOD NAME": "Visual_ArmorSkinPack", "DOWNLOAD FROM": "THUNDERSTORE", "LINK": "", "VERSION": "1.0", "THUNDERSTORE_NAMESPACE": null, "THUNDERSTORE_NAME": null, "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+  { id: "m6", "AUTHOR": "FevGrave", "MOD NAME": "Visual_WeaponSkinPack_InfernoAndFrost", "DOWNLOAD FROM": "GITHUB", "LINK": "", "VERSION": "0.1a-110-0-1a-1726832602", "LAST_CHECKED_VERSION": null, "LAST_CHECKED_AT": null },
+];
+// Simulated upstream "latest" per mod for the preview. Real check_all fetches
+// these from GitHub's releases API, Nexus's v1 API (apikey header), and
+// Thunderstore's v1 package API. null = the source can't return a version
+// (branch-archive zip with no tags, Thunderstore not yet inventoried, empty
+// link) -- the UI flags these as UNKNOWN rather than fabricating a compare.
+const UPSTREAM_LATEST = { m1: null, m2: "0.1.1", m3: "0.4.1", m4: "0.2.2", m5: null, m6: null };
+
+// Mock download stream for browser preview. The real backend (updates.py's
+// start_download/poll_download) streams the mod's archive to disk in chunks,
+// tracking bytes_done/bytes_total (Content-Length) and a rolling bytes/sec;
+// the mock replays that shape so the Updates page's EdfProgress bar + rate
+// line behave identically to the real download. See BuildRunner for the
+// async start/poll pattern this mirrors.
+let DL = { running: false, modId: null, bytes_done: 0, bytes_total: 0, bps: 0, finished: false, ok: false, timer: null, lastTick: 0, lastBytes: 0 };
+function startMockDownload(modId) {
+  if (DL.timer) clearInterval(DL.timer);
+  const size = 48 * 1024 * 1024; // 48 MB, like a mid-size EDF mod archive
+  DL = { running: true, modId, bytes_done: 0, bytes_total: size, bps: 0, finished: false, ok: false, timer: null, lastTick: Date.now(), lastBytes: 0 };
+  const rate = 3.2 * 1024 * 1024; // ~3.2 MB/s baseline, jittered below
+  DL.timer = setInterval(() => {
+    const now = Date.now();
+    const dt = Math.max(0.001, (now - DL.lastTick) / 1000);
+    const chunk = rate * dt * (0.7 + Math.random() * 0.6);
+    DL.bytes_done = Math.min(DL.bytes_total, DL.bytes_done + chunk);
+    DL.bps = (DL.bytes_done - DL.lastBytes) / dt; // bytes/sec (rolling since last tick)
+    DL.lastBytes = DL.bytes_done;
+    DL.lastTick = now;
+    if (DL.bytes_done >= DL.bytes_total) {
+      clearInterval(DL.timer); DL.timer = null;
+      DL.running = false; DL.finished = true; DL.ok = true; DL.bps = 0;
+    }
+  }, 200);
+}
+
 const _rawBridge = {
   async getPreflight() {
     if (API()?.get_preflight) return API().get_preflight();
@@ -218,22 +268,52 @@ const _rawBridge = {
     const p = PLUGINS.find((x) => x.id === id);
     return { ok: true, name: p ? p.name : id, mock: true };
   },
-  // Mod updates sourced from GitHub. The real backend (edf_mods.py) pulls the
-  // latest release tags + assets from each mod's GitHub repo; the mock replays
-  // the same shape so the Updates page is interactive in preview.
-  async getModUpdates() {
-    if (API()?.get_mod_updates) return API().get_mod_updates();
-    return [
-      { id: "u1", name: "EDF5_NativeRenderer_Fix", repo: "FevGrave/EDF5-NativeRenderer", current: "r3", latest: "r4", date: "2026-09-20", url: "https://github.com/FevGrave/EDF5-NativeRenderer/releases/latest", notes: "Fixes crash on AMD 7000-series; adds 144Hz cap." },
-      { id: "u2", name: "ModernCamera_OverTheShoulder", repo: "FevGrave/ModernCamera", current: "v4", latest: "v4.2", date: "2026-09-18", url: "https://github.com/FevGrave/ModernCamera/releases/latest", notes: "New over-the-shoulder presets; smoother aim transition." },
-      { id: "u3", name: "PatchKeys_KeyboardRemap", repo: "FevGrave/PatchKeys", current: "set2", latest: "set3", date: "2026-09-15", url: "https://github.com/FevGrave/PatchKeys/releases/latest", notes: "Adds gamepad hybrid layout; fixes Med Kit remap." },
-      { id: "u4", name: "PatchTables_ReduxOverhaul", repo: "FevGrave/PatchTables-Redux", current: "v2", latest: "v2", date: "2026-09-09", url: "https://github.com/FevGrave/PatchTables-Redux/releases/latest", notes: "Up to date — no update available." },
-    ];
-  },
-  async updateMod(id) {
-    if (API()?.update_mod) return API().update_mod(id);
+  // check_all (sync, fast): reads every enabled mod's MOD_INFO, dispatches to
+  // a per-source checker (_check_github / _check_nexus / _check_thunderstore)
+  // based on "DOWNLOAD FROM", string-compares the fetched latest against the
+  // stored VERSION, and writes LAST_CHECKED_VERSION/LAST_CHECKED_AT back into
+  // the MCD json. Returns a list of {id,name,author,source,link,current,latest,
+  // status,notes,lastCheckedAt} for the UI. status ∈ UPDATE|CURRENT|UNKNOWN
+  // (UNKNOWN = source can't return a version: branch-archive zip with no tags,
+  // Thunderstore not inventoried, or empty LINK). This is the synchronous
+  // "Check for Updates" click -- network calls are small JSON requests, no
+  // progress bar here.
+  async check_all() {
+    if (API()?.check_all) return API().check_all();
     await new Promise((r) => setTimeout(r, 500));
-    return { ok: true };
+    const now = new Date().toISOString();
+    return MOD_INFO.map((info) => {
+      const src = info["DOWNLOAD FROM"];
+      const link = info["LINK"];
+      const current = info["VERSION"];
+      const latest = UPSTREAM_LATEST[info.id] ?? null;
+      let status, notes;
+      if (!link) { status = "UNKNOWN"; notes = "No source link in MOD_INFO — can't check."; }
+      else if (src === "GITHUB" && link.endsWith("/archive/main.zip")) { status = "UNKNOWN"; notes = "GitHub branch archive has no version tag — re-download to compare, or rely on the author's VERSION field."; }
+      else if (src === "THUNDERSTORE" && !(info.THUNDERSTORE_NAMESPACE && info.THUNDERSTORE_NAME)) { status = "UNKNOWN"; notes = "Thunderstore package not inventoried — set its namespace/name to enable checking."; }
+      else if (latest === null) { status = "UNKNOWN"; notes = "Could not determine an upstream version from this source."; }
+      else { status = latest === current ? "CURRENT" : "UPDATE"; notes = ""; }
+      info["LAST_CHECKED_VERSION"] = latest || current;
+      info["LAST_CHECKED_AT"] = now;
+      return { id: info.id, name: info["MOD NAME"], author: info["AUTHOR"], source: src, link, current, latest, status, notes, lastCheckedAt: now };
+    });
+  },
+  // start_download / poll_download: the async pair, same shape as
+  // BuildRunner.start()/poll(). start_download launches a background thread
+  // that streams the mod's archive to disk in chunks, tracking bytes_done /
+  // bytes_total (Content-Length) and a rolling bytes/sec. poll_download
+  // returns {running,modId,bytes_done,bytes_total,bps,finished,ok} every call,
+  // polled at the same 400ms cadence builds already use. Actually performing
+  // the update (replacing files in the live install) is a later step -- this
+  // covers checking + showing download progress once a download starts.
+  async start_download(modId) {
+    if (API()?.start_download) return API().start_download(modId);
+    startMockDownload(modId);
+    return { started: true };
+  },
+  async poll_download() {
+    if (API()?.poll_download) return API().poll_download();
+    return { running: DL.running, modId: DL.modId, bytes_done: Math.floor(DL.bytes_done), bytes_total: DL.bytes_total, bps: Math.floor(DL.bps), finished: DL.finished, ok: DL.ok };
   },
   async getProfiles() {
     if (API()?.get_profiles) return API().get_profiles();
