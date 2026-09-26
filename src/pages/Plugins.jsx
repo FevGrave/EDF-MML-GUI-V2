@@ -46,7 +46,7 @@ export default function Plugins() {
 
   return (
     <>
-      <Panel style={{ left: 620, top: 130, width: 600, height: 830, padding: "10px 20px", display: "flex", flexDirection: "column" }} title="Plugins/Patches" right={<Pill className="w">{plugins.filter((p) => p.enabled).length} of {plugins.length} on</Pill>}>
+      <Panel style={{ left: 620, top: 130, width: 600, height: 395, padding: "10px 20px", display: "flex", flexDirection: "column" }} title="Plugins/Patches" right={<Pill className="w">{plugins.filter((p) => p.enabled).length} of {plugins.length} on</Pill>}>
         {/* Real gap fixed (2026-09-25): this was a hardcoded height:720, which didn't
             actually match the Panel's real available height (830 minus its padding and
             title bar), leaving ~30-40px of dead space below the list. flex:1 + minHeight:0
@@ -91,7 +91,7 @@ export default function Plugins() {
           </div>
         ) : <p className="cfdesc" style={{ marginTop: 8 }}>Select a plugin to inspect it.</p>}
       </Panel>
-      <Panel style={{ left: 1240, top: 540, width: 550, height: 420, padding: "10px 18px" }} title="File Contents" right={file?.editable ? <span className="chip" style={{ margin: 0 }}>{file.ext.toUpperCase()}</span> : null}>
+      <Panel style={{ left: 620, top: 540, width: 1170, height: 420, padding: "10px 18px" }} title="File Contents" right={file?.editable ? <span className="chip" style={{ margin: 0 }}>{file.ext.toUpperCase()}</span> : null}>
         {file ? (
           file.editable === false ? (
             <p className="cfdesc" style={{ marginTop: 8 }}>{file.note || "This file can't be edited here."}</p>
