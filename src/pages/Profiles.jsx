@@ -11,25 +11,32 @@ export default function Profiles() {
   const [sel, setSel] = useState(null);
   const [name, setName] = useState("");
   const [msg, setMsg] = useState("");
+  const [tick, setTick] = useState(0);
 
-  const load = () => bridge.getProfiles().then((ps) => { setProfiles(ps); if (!sel && ps[0]) setSel(ps[0].id); });
+  const load = () => bridge.getProfiles().then((ps) => { setProfiles(ps); if (!sel && ps[0]) setSel(ps[0].id); setTick((t) => t + 1); });
   useEffect(() => { load(); }, []);
 
   const selP = profiles.find((p) => p.id === sel);
   const save = async () => { if (!name.trim()) return; await bridge.saveProfile(name.trim()); setName(""); setMsg("Profile saved."); load(); };
-  const loadP = async () => { if (!selP) return; await bridge.loadProfile(selP.id); setMsg('Profile "' + selP.name + '" loaded.'); };
+  // Real bug fix (2026-09-25): this never called load() after a successful
+  // loadProfile() -- profiles.py's load_profile() DOES correctly persist the new
+  // active profile to MML_Profiles.txt ("LOAD PROFILE = <name>"), but the frontend
+  // never re-fetched the list afterward, so list_profiles()'s real per-profile
+  // `active` flag (and so the star / "LOADED" tag) stayed stuck on whichever
+  // profile was active before, until something else happened to trigger a refresh.
+  const loadP = async () => { if (!selP) return; await bridge.loadProfile(selP.id); setMsg('Profile "' + selP.name + '" loaded.'); load(); };
   const exp = async () => { if (!selP) return; const r = await bridge.exportProfile(selP.id); setMsg("Exported: " + r.text); };
   const del = async () => { if (!selP) return; await bridge.deleteProfile(selP.id); setMsg("Profile deleted."); setSel(null); load(); };
 
   const toggleMod = async (m, enabled) => {
     if (!selP) return;
-    await bridge.toggleModConfig(selP.id, m.id, enabled);
+    await bridge.toggleModConfig(selP.id, m.name, enabled);
     load();
   };
   const uninstallMod = async (m) => {
     if (!selP) return;
-    await bridge.uninstallModConfig(selP.id, m.id);
-    setMsg("Uninstalled " + m.name + " — files listed in its config were removed.");
+    await bridge.uninstallModConfig(selP.id, m.name);
+    setMsg("Uninstalled " + m.name + " — disabled on disk and removed from this profile.");
     load();
   };
   const moveMod = async (fromIdx, toIdx) => {
@@ -44,8 +51,8 @@ export default function Profiles() {
         <div className="scroller" style={{ flex: 1, minHeight: 0, marginTop: 8, border: "3px solid var(--frame2)", background: "rgba(0,0,0,.45)", boxShadow: "inset 0 0 0 1px rgba(0,0,0,.6)" }}>
           {profiles.map((p) => (
             <div key={p.id} className={`modrow ${sel === p.id ? "sel" : ""}`} onClick={() => setSel(p.id)}>
-              <span className="ord">◈</span>
-              <div style={{ minWidth: 0, overflow: "hidden" }}><ScrollText><b>{p.name}</b></ScrollText><span className="catsub">{new Date(p.timestamp).toLocaleString()}</span></div>
+              <span className={`ord${p.active ? " activeprof" : ""}`} title={p.active ? "Currently loaded" : "Not loaded"}>{p.active ? "★" : "◈"}</span>
+              <div style={{ minWidth: 0, overflow: "hidden" }}><ScrollText><b>{p.name}</b></ScrollText><span className="catsub">{new Date(p.timestamp).toLocaleString()}{p.active ? " · LOADED" : ""}</span></div>
               <span className="catsub">{p.mods?.length || 0} mods</span>
               <span /><span />
             </div>
@@ -59,7 +66,7 @@ export default function Profiles() {
         ]} />
       </Panel>
 
-      <Panel style={{ left: 1200, top: 130, width: 680, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
+      <Panel style={{ left: 1200, top: 130, width: 600, height: 830, padding: "10px 18px", display: "flex", flexDirection: "column" }} title="Mod Config Data" right={<Pill className="w">{selP?.mods?.length || 0} files</Pill>}>
         {selP ? (
           <div style={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, marginTop: 8 }}>
             <p className="cfn">{selP.name}</p>
@@ -73,7 +80,7 @@ export default function Profiles() {
                 return (
                 <div key={m.id || i} className="modrow" style={{ cursor: "default", gridTemplateColumns: "40px minmax(0,1fr) auto auto auto" }}>
                   <input
-                    key={`${m.id}-${i}`}
+                    key={`${m.id}-${i}-${tick}`}
                     className="ordin"
                     type="number"
                     min={1}
@@ -92,7 +99,7 @@ export default function Profiles() {
                     onKeyDown={(e) => { if (e.key === "Enter") e.target.blur(); }}
                   />
                   <div style={{ minWidth: 0, overflow: "hidden" }}>
-                    <ScrollText><b style={{ fontSize: 18 }}>{m.name}Mod_config_data.json{m.enabled ? "" : "disabled"}</b></ScrollText>
+                    <ScrollText><b style={{ fontSize: 18 }}>{m.name}</b></ScrollText>
                     <span className="catsub">{m.category}</span>
                   </div>
                   <div className="ordbtns">

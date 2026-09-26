@@ -6,6 +6,7 @@ import EdfProgress from "@/components/mml/EdfProgress";
 export default function Build() {
   const [mode, setMode] = useState("installer");
   const [order, setOrder] = useState("MOD NAME");
+  const [profileName, setProfileName] = useState(null);
   const [stages, setStages] = useState([]);
   const [done, setDone] = useState([]);
   const [waiting, setWaiting] = useState(false);
@@ -15,6 +16,23 @@ export default function Build() {
   const timerRef = useRef(null);
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+
+  // Real, saved mode/order from the backend (added 2026-09-24) -- these used
+  // to be plain useState that reset to "installer"/"MOD NAME" on every mount.
+  useEffect(() => {
+    bridge.getBuildPrefs().then((p) => {
+      if (p?.mode) setMode(p.mode);
+      if (p?.order) setOrder(p.order);
+    });
+    // Which saved profile a build will actually pull mods from -- previously
+    // shown nowhere on this page (confirmed with the user, 2026-09-25).
+    bridge.getProfiles().then((ps) => {
+      const a = ps.find((pr) => pr.active);
+      setProfileName(a ? a.name : null);
+    });
+  }, []);
+  const changeMode = (m) => { setMode(m); bridge.setBuildPrefs({ mode: m }); };
+  const changeOrder = (o) => { setOrder(o); bridge.setBuildPrefs({ order: o }); };
 
   const build = async () => {
     if (busy) return;
@@ -50,14 +68,15 @@ export default function Build() {
   return (
     <>
       <Panel style={{ left: 620, top: 130, width: 600, height: 830, padding: "10px 20px" }} title="Build">
+        <div className="optrow"><span>Profile</span><b style={{ color: profileName ? "var(--ok)" : "var(--warn)" }}>{profileName || "None loaded"}</b></div>
         <div className="optrow"><span>Mode</span>
           <div className="seg">
-            <button className={mode === "ni" ? "on" : ""} onClick={() => setMode("ni")}>NI Test</button>
-            <button className={mode === "installer" ? "on" : ""} onClick={() => setMode("installer")}>Installer</button>
+            <button className={mode === "ni" ? "on" : ""} onClick={() => changeMode("ni")}>NI Test</button>
+            <button className={mode === "installer" ? "on" : ""} onClick={() => changeMode("installer")}>Installer</button>
           </div>
         </div>
         <div className="optrow"><span>Order by</span>
-          <select className="mmlsel" value={order} onChange={(e) => setOrder(e.target.value)}>
+          <select className="mmlsel" value={order} onChange={(e) => changeOrder(e.target.value)}>
             <option>MOD NAME</option><option>LOAD ORDER</option><option>CATEGORY</option>
           </select>
         </div>

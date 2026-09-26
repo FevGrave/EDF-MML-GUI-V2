@@ -126,7 +126,9 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
   border-top:3px solid rgba(255,255,255,.9);border-bottom:3px solid var(--line)}
 .mb .bev::before{content:"";position:absolute;left:34%;top:8%;bottom:8%;width:0;border-left:2px dotted rgba(255,255,255,.75);transform:skewX(-32deg)}
 .mb .bev::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.32) 0%,rgba(0,0,0,.06) 32%,rgba(0,0,0,.20) 60%,rgba(0,0,0,.04) 100%)}
-#menu .mb .bev{width:100%;clip-path:polygon(0 0,82% 0,84% 7%,88% 0,100% 0,100% 22%,95% 32%,100% 46%,100% 58%,0 100%);
+#menu .mb .bev{width:100%;
+  -webkit-mask:url(./assets/menu-button.svg) 100% 100%/100% 100% no-repeat;
+          mask:url(./assets/menu-button.svg) 100% 100%/100% 100% no-repeat;
   background:radial-gradient(120% 200% at 96% 0%,rgba(20,8,2,.85) 0%,transparent 40%),linear-gradient(90deg,var(--bevel1) 0%,var(--bevel1) 52%,var(--bevel2) 74%,#2c1608 88%,#5a260c 95%,transparent 100%);
   box-shadow:inset 0 3px 0 rgba(255,255,255,.9);border:0}
 #menu .mb .bev::after{content:"";position:absolute;top:0;left:-22%;width:18%;height:100%;inset:auto;
@@ -194,6 +196,19 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .dm.w{background:var(--warn);box-shadow:0 0 8px var(--warn)}
 .dm.bad{background:var(--bad);box-shadow:0 0 8px var(--bad)}
 .dm.mute{background:#777;box-shadow:none}
+/* Real clipping bug fixed (2026-09-25): .dm is a 14x14 box rotated 45deg, so its visual
+   diamond shape actually spans ~19.8px on the diagonal -- it bleeds ~2.9px past its own
+   layout box on every side. That's invisible almost everywhere, but any browser that sets
+   overflow-y (as .scroller does, for its scrollbar) computes overflow-x to "auto" too, per
+   the CSS spec, even though .scroller never declares overflow-x itself -- and an "auto"
+   axis clips content past its box edge instead of painting it, unlike the default
+   "visible". Plugin Detail's Type/Folder/Category/Conflicts rows put .dm as the very first
+   flex child inside .scroller with nothing to its left, so that left-side bleed had nowhere
+   to go and got clipped flush, cutting the diamond's left point off. Home.jsx's own .dm
+   usages aren't inside a .scroller, so they were never affected. Fix: give any .dm inside a
+   .scroller a little breathing room instead of touching the shared bare .dm rule (which
+   would nudge every non-scroller usage too, for no reason).*/
+.scroller .dm{margin-left:4px}
 
 .pill{font:600 16px var(--font);letter-spacing:.14em;padding:2px 10px;border:2px solid currentColor;color:var(--ok);white-space:nowrap;text-transform:uppercase}
 .pill.w{color:var(--warn)}.pill.bad{color:var(--bad)}.pill.mute{color:#a5a5a5}
@@ -239,8 +254,20 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 
 /* command window */
 .conwin{padding:12px 18px}
-#log{height:110px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;font:17px/1.5 var(--mono);white-space:pre-wrap}
+/* Real scrollback (2026-09-25): was overflow:hidden + a hard 5-line JS cap
+   (`.slice(-5)`), which silently dropped everything else -- a real
+   complaint on its own, and unworkable once multi-line/timed commands
+   (the EDF chant, credits scroll, easter eggs -- see
+   backend/console_commands.py) can push dozens of lines. overflow-y:auto
+   plus CommandLine.jsx's own auto-scroll-to-bottom replaces the cap;
+   user-select stays enabled here same as the rest of the window (see
+   webapp.py's create_window(text_select=True) fix), so this is also where
+   the "can't copy console text" complaint actually resolves visually. */
+#log{height:110px;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;font:17px/1.5 var(--mono);white-space:pre-wrap;user-select:text}
 #log div{color:#7dffb0}#log .w{color:var(--warn)}#log .b{color:var(--bad)}#log .d{color:#a9a58f}
+#log::-webkit-scrollbar{width:8px}
+#log::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+#log::-webkit-scrollbar-track{background:transparent}
 .cin{display:flex;gap:10px;align-items:center;border-top:3px solid var(--line);margin-top:8px;padding-top:8px;font:19px var(--mono);color:var(--ok)}
 .cin input{flex:1;background:transparent;border:0;outline:0;color:#eafff2;font:19px var(--mono)}
 .cin input::placeholder{color:#9b9880}
@@ -256,6 +283,7 @@ body{background:#070809;color:var(--ink);font-family:var(--font);overflow:hidden
 .modrow:hover{background:linear-gradient(rgba(255,140,40,.18),rgba(0,0,0,.32)),var(--row)}
 .modrow.sel{background:linear-gradient(rgba(255,140,40,.3),rgba(0,0,0,.32)),var(--row);box-shadow:inset 0 0 0 2px var(--focus)}
 .modrow .ord{font:600 20px var(--mono);color:var(--focus);text-align:center}
+.modrow .ord.activeprof{color:var(--ok)}
 .modrow b{font:600 22px var(--font);display:block;line-height:1.1}
 .modrow .catsub{font:500 16px var(--mono);color:#cfd;opacity:.8;letter-spacing:0;margin-left:10px}
 .modrow .confbadge{font:600 14px var(--font);padding:2px 8px;border:2px solid var(--ok);color:var(--ok);text-transform:uppercase;letter-spacing:.08em}

@@ -27,12 +27,21 @@ export default function Home() {
   const [bg] = useBgArt();
   const [games, setGames] = useState([]);
   const [active, setActive] = useState(null);
+  const [slots, setSlots] = useState([]);
+  const [activeSlot, setActiveSlot] = useState(null);
   useEffect(() => { bridge.getPreflight().then(setR); }, []);
   useEffect(() => {
     bridge.getGames().then(setGames);
     bridge.getActiveGame().then(setActive);
+    bridge.getWeaponSlots().then(setSlots);
+    bridge.getActiveSaveSlot().then(setActiveSlot);
   }, []);
   const pickGame = (id) => { bridge.setActiveGame(id); setActive(id); };
+  // Real save-slot picker (added 2026-09-25): Mods/SaveData/edf6_weapons_slotNN.bin,
+  // up to 4, one per in-game save -- only one is ever "the save you're
+  // playing", so picking it re-fetches preflight so the weapons stat reflects
+  // that slot's own real used/capacity. See backend/preflight.py.
+  const pickSlot = (slot) => { bridge.setActiveSaveSlot(slot); setActiveSlot(slot); bridge.getPreflight().then(setR); };
 
   if (!r) return <Panel style={{ left: 1070, top: 130, width: 720, height: 600, padding: 20 }} title="Preflight"><p className="cfdesc">Loading preflight…</p></Panel>;
 
@@ -56,7 +65,14 @@ export default function Home() {
         <PfRow dot={cls(mml.state)} name="MML MergeCommand" cat="Core" note={mml.detail}><Badge state={mml.state} /><Pill className={cls(mml.state)}>{word(mml.state, "Up to date", "Update", "Error", "Offline")}</Pill></PfRow>
         <div className="st">
           <Gauge label="Weapons" value={wpct} />
-          <div className="gv"><b>{w && w.used != null && w.capacity != null ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : (w && w.capacity != null ? `— / ${w.capacity.toLocaleString()}` : "—")}</b><span>slots used</span></div>
+          <div className="gv"><b>{w && w.used != null && w.capacity != null ? `${w.used.toLocaleString()} / ${w.capacity.toLocaleString()}` : (w && w.capacity != null ? `— / ${w.capacity.toLocaleString()}` : "—")}</b><span>slots used{w && w.max_capacity != null ? ` · max ${w.max_capacity.toLocaleString()}` : ""}</span></div>
+          {slots.length > 0 && (
+            <div className="r"><span>Save slot</span>
+              <select className="mmlsel" style={{ height: 28, fontSize: 15, padding: "0 6px" }} value={activeSlot || slots[0]?.slot || ""} onChange={(e) => pickSlot(e.target.value)}>
+                {slots.map((s) => <option key={s.slot} value={s.slot}>Slot {s.slot}{s.used != null ? ` (${s.used.toLocaleString()} used)` : ""}</option>)}
+              </select>
+            </div>
+          )}
           <div className="r"><span>Active game</span>
             <select className="mmlsel" style={{ height: 28, fontSize: 15, padding: "0 6px" }} value={active || ""} onChange={(e) => pickGame(e.target.value)}>
               {games.length === 0 && <option value="">—</option>}

@@ -3,7 +3,7 @@ import { bridge } from "@/lib/mmlBridge";
 import Panel from "@/components/mml/Panel";
 import Pill from "@/components/mml/Pill";
 import ColorField from "@/components/mml/ColorField";
-import { useMmlPalette, CUSTOM_FIELDS } from "@/lib/mmlPalette";
+import { useMmlPalette, PALETTE_FIELDS, GLOBAL_FIELDS } from "@/lib/mmlPalette";
 import { useBgArt } from "@/lib/mmlBgArt";
 
 const PALETTES = [["khaki", "#c9b98a"], ["purple", "#5b4056"], ["green", "#2fb070"]];
@@ -13,7 +13,7 @@ const PLATS = ["steam", "epic"];
 const STEAM_ONLY = ["edf41", "edf5"];
 
 export default function Settings() {
-  const { palette, setPalette, custom, setCustom } = useMmlPalette();
+  const { palette, setPalette, paletteColors, setCustom } = useMmlPalette();
   const [art, setArt] = useBgArt();
   const [games, setGames] = useState([]);
   const [detecting, setDetecting] = useState(false);
@@ -35,13 +35,26 @@ export default function Settings() {
     bridge.setGameDir(id, dir);
     setGames((gs) => gs.map((g) => (g.id === id ? { ...g, working_dir: dir } : g)));
   };
+  // Real bug fix (2026-09-25): "Installed"/"Not installed" is now computed
+  // live from the real filesystem on the backend (settings.py's get_games),
+  // not a stored flag that only Auto-detect ever set -- a manually-typed
+  // path used to show "Not installed" forever even once it pointed at a
+  // real folder. Refetch on blur (not every keystroke) so the pill updates
+  // once the user finishes typing, without a round-trip per character.
+  const refreshInstalled = () => { bridge.getGames().then(setGames); };
   const setPlat = (id, platform) => {
     bridge.setGamePlatform(id, platform);
     setGames((gs) => gs.map((g) => (g.id === id ? { ...g, platform } : g)));
   };
 
+  // Real gap fixed (2026-09-25): this used left:620 (the convention for the
+  // FIRST of a two-panel page) while being the only panel on this page --
+  // Play.jsx, this page's one real sibling that's also a single full-canvas
+  // panel at the same width (1100), uses left:690 instead, which actually
+  // reaches the outer frame. left:620 left ~70px of dead space on the right
+  // that Play.jsx doesn't have -- matched here.
   return (
-    <Panel style={{ left: 620, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Settings">
+    <Panel style={{ left: 690, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Settings">
       <div style={{ display: "flex", gap: 28, marginTop: 14 }}>
         {/* left: palette + background art */}
         <div style={{ width: 480, flex: "none" }}>
@@ -57,13 +70,45 @@ export default function Settings() {
             </button>
           </div>
 
-          {palette === "custom" && (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 18px", marginTop: 10 }}>
-              {CUSTOM_FIELDS.map(({ label, var: v, def }) => (
-                <ColorField key={v} label={label} value={custom[v]} def={def} onChange={(hex) => setCustom(v, hex)} />
+          {/* Global colors (2026-09-24 fix): Focus/Text are real GLOBAL
+              :root CSS vars, not redefined per [data-theme] block, so they
+              can't be scoped to "whichever palette is selected" like the
+              rest of the grid below -- editing one here applies to
+              khaki/purple/green/custom all at once (see mmlPalette.jsx's
+              GLOBAL_FIELD_VARS comment). Shown once, above the per-palette
+              section, so it's clear it isn't just for the currently
+              selected palette. */}
+          <div style={{ font: "600 15px var(--font)", letterSpacing: ".08em", color: "var(--ink)", opacity: 0.8, margin: "10px 0 4px" }}>
+            Global colors <span style={{ opacity: 0.6, textTransform: "none", letterSpacing: 0 }}>(apply to every palette)</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 18px", marginBottom: 8 }}>
+            {GLOBAL_FIELDS.map(({ label, var: v }) => (
+              <ColorField key={v} label={label} value={paletteColors[v]} def={paletteColors[v]} onChange={(hex) => setCustom(v, hex)} />
+            ))}
+          </div>
+
+          {/* Per-palette color overrides (2026-09-24 redesign): the grid used
+              to only show for "custom"; now every preset gets its own
+              independently-saved overrides, so it's always visible and
+              always edits whichever palette is currently selected. Grew from
+              8 to 13 real fields (see mmlPalette.jsx), so it's scrollable
+              like the game list below instead of overflowing the panel. */}
+          <div style={{ font: "600 15px var(--font)", letterSpacing: ".08em", color: "var(--ink)", opacity: 0.8, margin: "10px 0 4px", textTransform: "capitalize" }}>
+            {palette} colors
+          </div>
+          {/* Real fix (2026-09-25): 240 isn't a multiple of a color row's real
+              height (40px row + 6px gap = 46px/row), so the grid always cut
+              a row in half at the bottom (label with no swatch/hex visible --
+              "text out of the boundary"). 270 = 6 full rows (6*46-6); the
+              13th field ("Row highlight") still scrolls into view, but no
+              row is ever sliced. */}
+          <div className="scroller" style={{ maxHeight: 270, marginTop: 4, paddingRight: 6 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 18px" }}>
+              {PALETTE_FIELDS.map(({ label, var: v }) => (
+                <ColorField key={v} label={label} value={paletteColors[v]} def={paletteColors[v]} onChange={(hex) => setCustom(v, hex)} />
               ))}
             </div>
-          )}
+          </div>
 
           <div className="optrow" style={{ marginTop: 8 }}><span>Background art</span>
             <div className="seg">
@@ -114,7 +159,7 @@ export default function Settings() {
                     {!STEAM_ONLY.includes(g.id) && PLATS.map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                   <input className="mmlin" style={{ height: 30, fontSize: 14, padding: "0 10px" }} maxLength={260}
-                    placeholder="Game working directory…" value={g.working_dir || ""} onChange={(e) => setDir(g.id, e.target.value)} />
+                    placeholder="Game working directory…" value={g.working_dir || ""} onChange={(e) => setDir(g.id, e.target.value)} onBlur={refreshInstalled} />
                 </div>
               </div>
             ))}
