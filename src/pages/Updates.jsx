@@ -66,7 +66,7 @@ export default function Updates() {
   const pct = dl.bytes_total ? (dl.bytes_done / dl.bytes_total) * 100 : 0;
 
   return (
-    <Panel style={{ left: 690, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Updates" right={<Pill className={count ? "w" : ""}>{count} to update</Pill>}>
+    <Panel style={{ left: 620, top: 130, width: 1170, height: 830, padding: "10px 24px" }} title="Updates" right={<Pill className={count ? "w" : ""}>{count} to update</Pill>}>
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 12, marginBottom: 10 }}>
         <button className="palbtn" style={{ padding: "8px 14px" }} onClick={check} disabled={loading}>{loading ? "Checking…" : "Check for updates"}</button>
         <span className="cfdesc" style={{ fontSize: 16 }}>{lastChecked ? `Last checked: ${lastChecked.toLocaleTimeString()}` : "Checks every enabled mod's installed version against its real source on GitHub, Nexus Mods, or Thunderstore."}</span>

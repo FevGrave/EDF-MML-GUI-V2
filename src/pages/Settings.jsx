@@ -54,7 +54,7 @@ export default function Settings() {
   // reaches the outer frame. left:620 left ~70px of dead space on the right
   // that Play.jsx doesn't have -- matched here.
   return (
-    <Panel style={{ left: 690, top: 130, width: 1100, height: 830, padding: "10px 24px" }} title="Settings">
+    <Panel style={{ left: 620, top: 130, width: 1170, height: 830, padding: "10px 24px" }} title="Settings">
       <div style={{ display: "flex", gap: 28, marginTop: 14 }}>
         {/* left: palette + background art */}
         <div style={{ width: 480, flex: "none" }}>
