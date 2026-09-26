@@ -218,6 +218,23 @@ const _rawBridge = {
     const p = PLUGINS.find((x) => x.id === id);
     return { ok: true, name: p ? p.name : id, mock: true };
   },
+  // Mod updates sourced from GitHub. The real backend (edf_mods.py) pulls the
+  // latest release tags + assets from each mod's GitHub repo; the mock replays
+  // the same shape so the Updates page is interactive in preview.
+  async getModUpdates() {
+    if (API()?.get_mod_updates) return API().get_mod_updates();
+    return [
+      { id: "u1", name: "EDF5_NativeRenderer_Fix", repo: "FevGrave/EDF5-NativeRenderer", current: "r3", latest: "r4", date: "2026-09-20", url: "https://github.com/FevGrave/EDF5-NativeRenderer/releases/latest", notes: "Fixes crash on AMD 7000-series; adds 144Hz cap." },
+      { id: "u2", name: "ModernCamera_OverTheShoulder", repo: "FevGrave/ModernCamera", current: "v4", latest: "v4.2", date: "2026-09-18", url: "https://github.com/FevGrave/ModernCamera/releases/latest", notes: "New over-the-shoulder presets; smoother aim transition." },
+      { id: "u3", name: "PatchKeys_KeyboardRemap", repo: "FevGrave/PatchKeys", current: "set2", latest: "set3", date: "2026-09-15", url: "https://github.com/FevGrave/PatchKeys/releases/latest", notes: "Adds gamepad hybrid layout; fixes Med Kit remap." },
+      { id: "u4", name: "PatchTables_ReduxOverhaul", repo: "FevGrave/PatchTables-Redux", current: "v2", latest: "v2", date: "2026-09-09", url: "https://github.com/FevGrave/PatchTables-Redux/releases/latest", notes: "Up to date — no update available." },
+    ];
+  },
+  async updateMod(id) {
+    if (API()?.update_mod) return API().update_mod(id);
+    await new Promise((r) => setTimeout(r, 500));
+    return { ok: true };
+  },
   async getProfiles() {
     if (API()?.get_profiles) return API().get_profiles();
     return clone(PROFILES);
