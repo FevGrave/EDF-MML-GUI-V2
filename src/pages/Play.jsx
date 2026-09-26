@@ -26,7 +26,7 @@ export default function Play() {
   };
 
   return (
-    <Panel style={{ left: 620, top: 130, width: 1110, height: 830, padding: "10px 24px" }} title="Play Game">
+    <Panel style={{ left: 620, top: 130, width: 1170, height: 830, padding: "10px 24px" }} title="Play Game">
       <p className="cfdesc" style={{ marginTop: 10, marginBottom: 14 }}>
         Launch any EDF title straight from your client — click <b>Launch</b> and the game opens via Steam or the Epic Games launcher. Set each game's platform in Settings.
       </p>
